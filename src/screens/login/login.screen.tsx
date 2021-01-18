@@ -126,7 +126,7 @@ class LoginScreen extends Component<any, ILoginState> {
                           <View style={{marginTop: 10}}>
                             <Button mode="contained" onPress={props.handleSubmit} uppercase={false}>
                               <Text style={{fontSize: 16}}>{'Login'}</Text>
-                            </Button>                            
+                            </Button>
                           </View>
 
                         </View>

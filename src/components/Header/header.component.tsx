@@ -39,7 +39,7 @@ export class HeaderComponent extends React.Component<Props, any> {
         />
         
         <Appbar.Content title={this.props.scene?.route.name} />
-        <Appbar.Action icon="dots-vertical" onPress={this._handleMore} />
+        {/* <Appbar.Action icon="dots-vertical" onPress={this._handleMore} /> */}
         
       </Appbar.Header>
       

@@ -3,6 +3,8 @@ import {
     Text,
   View
 } from 'react-native';
+import { Button } from 'react-native-paper';
+import { SitesListing } from '../../components/listing/sites-listing/sites-listing.component';
 
 import styles from './site.style';
 
@@ -23,8 +25,17 @@ export class SiteScreen extends Component<any, any> {
   render() {
     return (
       <View style={styles.container}>
-          
-        <Text style={{fontSize:18, color:'#ffffff'}}>{'Site'}</Text>
+        <View style={styles.btnContainer}>
+          <Button mode="outlined" uppercase={false}>
+            <Text style={{fontSize: 16}}>{'Add Site'}</Text>
+          </Button>
+
+          <Button mode="outlined" uppercase={false}>
+            <Text style={{fontSize: 16}}>{'Manage Category'}</Text>
+          </Button>
+        </View>
+
+        <SitesListing />
 
       </View>
     );
