@@ -32,7 +32,7 @@ export const SitesListing = (props: any) => {
 
   const allSites = async () => {
     const allSitesRespond = await getAllSites();
-    if (allSitesRespond.data) {
+    if (allSitesRespond && allSitesRespond.data) {
       setListData(allSitesRespond.data);
     }
   }
@@ -83,87 +83,28 @@ export const SitesListing = (props: any) => {
     openModal(MODAL_NAMES.SITE_SETTINGS);
   }
 
-  const editSite = (siteObject: SiteType) => {
-    setCurrentSite(siteObject);
-    openModal(MODAL_NAMES.CREATE_SITE);
-  }
 
-  const viewSite = (siteObject: SiteType) => {
-    setReadOnlyFlag(true);
-    setCurrentSite(siteObject);
-    openModal(MODAL_NAMES.CREATE_SITE);
+  const viewSite = (siteDetails: SiteType) => {
+    props.navigation.push('ViewSite', {siteDetails})
   }
 
   return (
     <View>
       <DataTable>
         <DataTable.Header>
-          <DataTable.Title
-            sortDirection='descending'
-          >
-            Dessert
-          </DataTable.Title>
-          <DataTable.Title numeric>Calories</DataTable.Title>
-          <DataTable.Title numeric>Fat (g)</DataTable.Title>
+          <DataTable.Title>Site Name</DataTable.Title>
+          <DataTable.Title>Owner Name</DataTable.Title>
+          <DataTable.Title>Complete Date</DataTable.Title>
         </DataTable.Header>
+
+        {listData.map((rowObj: any) => (
+          <DataTable.Row onPress={()=>viewSite(rowObj)} key={rowObj.siteId}>
+            <DataTable.Cell>{rowObj.siteName}</DataTable.Cell>
+            <DataTable.Cell>{rowObj.ownerName}</DataTable.Cell>
+            <DataTable.Cell>{moment(rowObj.tentativeDeadline).format('DD/MM/YYYY')}</DataTable.Cell>
+          </DataTable.Row>
+        ))}
       </DataTable>
     </View>
-    // <>
-    //   <Container fluid>
-    //     <Row className="add-buttton-row">
-    //       <Col>
-    //         <h3 className="float-left">Sites</h3>
-    //         {user.userType == COMMON.SUPER_USER && <Button variant="outline-primary" size="sm" className="float-right" onClick={openModal.bind(null, MODAL_NAMES.WORK_CATEGORY)}>Manage Category</Button> }
-    //         {user.userType == COMMON.SUPER_USER && <Button variant="outline-primary" size="sm" className="float-right add-site-btn" onClick={() => { setCurrentSite({} as SiteType); openModal(MODAL_NAMES.CREATE_SITE) }}>Add Site</Button>}
-    //       </Col>
-    //     </Row>
-    //     <Row>
-    //       <Col>
-    //         <Table striped bordered hover size="sm">
-    //           <thead>
-    //             <tr>
-    //               {tableObject.map(columnObj => (
-    //                 <th key={columnObj.columnName}>
-    //                   {columnObj.columnName}
-    //                 </th>
-    //               ))}
-    //             </tr>
-    //           </thead>
-    //           <tbody>
-    //             {listData.map((rowObj: any) => (
-    //               <tr key={rowObj.siteId}>
-    //                 {tableObject.map((columnObj: any, index: number) =>
-    //                   (<td key={columnObj.columnName}>
-    //                     {columnObj.view(rowObj, rowObj[columnObj.key])}
-    //                     {tableObject.length - 1 === index &&
-    //                       <Fragment>
-    //                         <Button variant="outline-primary" size="sm" className="float-right" onClick={() => openSiteSetting(rowObj)}>
-    //                           <FontAwesomeIcon icon={faCog} />
-    //                         </Button>
-    //                         <Button variant="link" className="float-right" onClick={() => editSite(rowObj)}>Edit</Button>
-    //                       </Fragment>
-    //                     }
-    //                   </td>)
-    //                 )}
-    //               </tr>
-    //             ))
-    //             }
-    //           </tbody>
-    //         </Table>
-    //       </Col>
-    //     </Row>
-    //   </Container>
-    //   <ModalComponent handleShow={handleShow} handleClose={handleClose} show={show}>
-    //     {modalName === MODAL_NAMES.CREATE_SITE &&
-    //       <SitesForms handleClose={handleClose} currentSite={currentSite} isReadOnly={isReadOnly}></SitesForms>
-    //     }
-    //     {modalName === MODAL_NAMES.SITE_SETTINGS &&
-    //       <SitesSettings handleClose={handleClose} currentSite={currentSite}></SitesSettings>
-    //     }
-    //     {modalName === MODAL_NAMES.WORK_CATEGORY &&
-    //       <WorkCategory handleClose={handleClose}></WorkCategory>
-    //     }
-    //   </ModalComponent>
-    // </>
   );
 };

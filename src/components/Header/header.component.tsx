@@ -38,7 +38,7 @@ export class HeaderComponent extends React.Component<Props, any> {
           onPress={() => this.props.navigation.openDrawer()}
         />
         
-        <Appbar.Content title={this.props.scene?.route.name} />
+        <Appbar.Content title={this.props.scene?.descriptor?.options.title} />
         {/* <Appbar.Action icon="dots-vertical" onPress={this._handleMore} /> */}
         
       </Appbar.Header>

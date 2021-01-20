@@ -4,12 +4,11 @@ import {
   View
 } from 'react-native';
 import { Button } from 'react-native-paper';
-import { SitesListing } from '../../components/listing/sites-listing/sites-listing.component';
 
-import styles from './site.style';
+import styles from './add-site.style';
 
 
-export class SiteScreen extends Component<any, any> {
+export class AddSiteScreen extends Component<any, any> {
 
   constructor(props: any) {
     super(props);
@@ -22,24 +21,14 @@ export class SiteScreen extends Component<any, any> {
     // });
   }
 
-  openAddSite = () => {
-    this.props.navigation.push('AddSite')
-  }
-
   render() {
     return (
       <View style={styles.container}>
         <View style={styles.btnContainer}>
-          <Button mode="outlined" uppercase={false} onPress={this.openAddSite}>
+          <Button mode="outlined" uppercase={false}>
             <Text style={{fontSize: 16}}>{'Add Site'}</Text>
           </Button>
-
-          <Button mode="outlined" uppercase={false}>
-            <Text style={{fontSize: 16}}>{'Manage Category'}</Text>
-          </Button>
         </View>
-
-        <SitesListing {...this.props}/>
 
       </View>
     );

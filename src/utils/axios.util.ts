@@ -27,7 +27,7 @@ axios.interceptors.response.use( res => {
 }, async (err) => {
   const user = store && store.getState().user;
   let errorMsg = "ERROR\n\n Error while processing data";
-  if(err.response && err.response.status === 401 && err.response.statusText === "Unauthorized" && user && user.email){
+  if(err.response && err.response.status === 401 && user && user.email){
     const originalRequest = err.config;
     const newToken = await refreshToken(user.email);
     if(newToken && newToken.data){

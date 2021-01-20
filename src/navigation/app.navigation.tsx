@@ -11,6 +11,8 @@ import {store} from "../reducers/store";
 import { Alert } from 'react-native';
 import { logout } from '../services';
 import { setUser } from '../reducers/actions';
+import { ViewSiteScreen } from '../screens/view-site/view-site.screen';
+import { AddSiteScreen } from '../screens/add-site/add-site.screen';
 
 const Drawer = createDrawerNavigator();
 const SiteStack = createStackNavigator();
@@ -32,6 +34,12 @@ const siteNavigator = () => {
           }}>
             <SiteStack.Screen name="Site" component={SiteScreen} options={{
                   title: "Site",
+                }}/>
+            <SiteStack.Screen name="ViewSite" component={ViewSiteScreen} options={{
+                  title: "View Site",
+                }}/>
+            <SiteStack.Screen name="AddSite" component={AddSiteScreen} options={{
+                  title: "Add Site",
                 }}/>
         </SiteStack.Navigator>
     );
