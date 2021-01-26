@@ -5,7 +5,7 @@ import styles from './sites-listing.style';
 import moment from "moment";
 import { useSelector } from "react-redux";
 import { SiteType } from "../../../typings";
-import { View } from "react-native";
+import { FlatList, View } from "react-native";
 import { DataTable } from "react-native-paper";
 
 interface TableObject {
@@ -16,7 +16,6 @@ interface TableObject {
 }
 
 export const SitesListing = (props: any) => {
-
   const user = useSelector((state:any) => state.user)
   const MODAL_NAMES = {
     CREATE_SITE: "CREATE_SITE",
@@ -39,7 +38,7 @@ export const SitesListing = (props: any) => {
 
   useEffect(() => {
     allSites();
-  }, []);
+  }, [props.refreshFlag]);
 
   // const tableObject: Array<TableObject> = [{
   //   columnName: "Site Name",
@@ -85,7 +84,20 @@ export const SitesListing = (props: any) => {
 
 
   const viewSite = (siteDetails: SiteType) => {
-    props.navigation.push('ViewSite', {siteDetails})
+    props.navigation.push('ViewSite', {
+      siteDetails,
+      refreshSiteData: props.refreshSiteData
+    })
+  }
+
+  const _renderItem = ({item}: {item: SiteType}) => {
+    return (
+    <DataTable.Row onPress={()=>viewSite(item)} key={item.siteId}>
+      <DataTable.Cell>{item.siteName}</DataTable.Cell>
+      <DataTable.Cell>{item.ownerName}</DataTable.Cell>
+      <DataTable.Cell>{moment(item.tentativeDeadline).format('DD/MM/YYYY')}</DataTable.Cell>
+    </DataTable.Row>
+    )
   }
 
   return (
@@ -97,13 +109,14 @@ export const SitesListing = (props: any) => {
           <DataTable.Title>Complete Date</DataTable.Title>
         </DataTable.Header>
 
-        {listData.map((rowObj: any) => (
-          <DataTable.Row onPress={()=>viewSite(rowObj)} key={rowObj.siteId}>
-            <DataTable.Cell>{rowObj.siteName}</DataTable.Cell>
-            <DataTable.Cell>{rowObj.ownerName}</DataTable.Cell>
-            <DataTable.Cell>{moment(rowObj.tentativeDeadline).format('DD/MM/YYYY')}</DataTable.Cell>
-          </DataTable.Row>
-        ))}
+        <FlatList
+          contentContainerStyle={{ alignSelf: 'stretch' }}
+          data={listData}
+          keyExtractor={(item: any) => item.siteId}
+          renderItem={_renderItem}
+          refreshing={false}
+          onRefresh={allSites}
+        />
       </DataTable>
     </View>
   );

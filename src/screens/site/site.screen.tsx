@@ -13,6 +13,9 @@ export class SiteScreen extends Component<any, any> {
 
   constructor(props: any) {
     super(props);
+    this.state = {
+      refreshFlag: 0,
+    };
   }
 
   componentDidMount = () => {
@@ -23,7 +26,13 @@ export class SiteScreen extends Component<any, any> {
   }
 
   openAddSite = () => {
-    this.props.navigation.push('AddSite')
+    this.props.navigation.push('AddSite', {refreshSiteData: this.refreshSiteData})
+  }
+
+  refreshSiteData = () => {
+    this.setState({
+      refreshFlag: Math.floor(Math.random() * 6) + 1 
+    });
   }
 
   render() {
@@ -39,7 +48,7 @@ export class SiteScreen extends Component<any, any> {
           </Button>
         </View>
 
-        <SitesListing {...this.props}/>
+        <SitesListing {...this.props} refreshFlag={this.state.refreshFlag} refreshSiteData={this.refreshSiteData} />
 
       </View>
     );

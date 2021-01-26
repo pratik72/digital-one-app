@@ -5,10 +5,20 @@ const styles = StyleSheet.create({
         flex: 1
     },
     btnContainer: {
-        flexDirection: "row",
-        justifyContent: "space-around",
+        marginVertical: 10,
+        marginHorizontal: 15
+    },
+    fieldView: {
+        marginTop: 10
+    },
+    btnView: {
         marginTop: 10,
-
+        flexDirection: 'row',
+        justifyContent: 'space-evenly'
+    },
+    btn: {
+        flex: 1,
+        marginHorizontal: 5
     }
 });
 

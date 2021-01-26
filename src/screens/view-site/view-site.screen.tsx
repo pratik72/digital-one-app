@@ -1,5 +1,5 @@
 import moment from 'moment';
-import React from 'react';
+import React, { useState } from 'react';
 import { Text, View } from 'react-native';
 import { Button, DataTable } from 'react-native-paper';
 import styles from './view-site.style';
@@ -7,11 +7,21 @@ import styles from './view-site.style';
 
 export const ViewSiteScreen = (props: any) => {
 
-    const {siteDetails} = props.route.params;
+    const [siteDetails, setSiteDetails] = useState(props.route.params.siteDetails)
+
+    const openEditSite = () => {
+      const {refreshSiteData} = props.route.params;
+      props.navigation.push('AddSite', {
+        refreshSiteData,
+        siteDetails,
+        setSiteDetails
+      })
+    }
+
     return (
       <View style={styles.container}>
         <View style={styles.btnContainer}>
-          <Button mode="outlined" uppercase={false}>
+          <Button mode="outlined" uppercase={false} onPress={openEditSite}>
             <Text style={{fontSize: 16}}>{'Edit Site'}</Text>
           </Button>
         </View>
