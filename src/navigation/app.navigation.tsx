@@ -3,7 +3,7 @@ import { createDrawerNavigator, DrawerContentScrollView, DrawerItem, DrawerItemL
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
-import { SiteScreen } from '../screens/site/site.screen';
+import { SiteScreen } from '../screens/sites/site/site.screen';
 import { WorkReportScreen } from '../screens/work-report/work-report.screen';
 import { HeaderComponent } from '../components';
 import LoginScreen from '../screens/login/login.screen';
@@ -11,8 +11,10 @@ import {store} from "../reducers/store";
 import { Alert } from 'react-native';
 import { logout } from '../services';
 import { setUser } from '../reducers/actions';
-import { ViewSiteScreen } from '../screens/view-site/view-site.screen';
-import { AddSiteScreen } from '../screens/add-site/add-site.screen';
+import { ViewSiteScreen } from '../screens/sites/view-site/view-site.screen';
+import { AddSiteScreen } from '../screens/sites/add-site/add-site.screen';
+import { WorkCategory } from '../screens/work-cetegory/work-category.component';
+import { SiteSettingScreen } from '../screens/sites/site-setting/site-setting.screen';
 
 const Drawer = createDrawerNavigator();
 const SiteStack = createStackNavigator();
@@ -40,6 +42,12 @@ const siteNavigator = () => {
                 }}/>
             <SiteStack.Screen name="AddSite" component={AddSiteScreen} options={{
                   title: "Add Site",
+                }}/>
+            <SiteStack.Screen name="WorkCategory" component={WorkCategory} options={{
+                  title: "Work Category",
+                }}/>
+            <SiteStack.Screen name="SiteSetting" component={SiteSettingScreen} options={{
+                  title: "Site Settings",
                 }}/>
         </SiteStack.Navigator>
     );

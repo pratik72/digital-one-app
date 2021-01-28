@@ -1,6 +1,6 @@
 import { Formik, FormikValues } from 'formik';
 import moment from 'moment';
-import React, { Component, RefObject } from 'react';
+import React, { Component } from 'react';
 import {
   ScrollView,
     Text,
@@ -8,9 +8,9 @@ import {
 } from 'react-native';
 import { Button, HelperText, TextInput } from 'react-native-paper';
 import * as Yup from 'yup';
-import { DateTimePickerComponent } from '../../components';
-import { addNewSite, editSite } from '../../services';
-import { SiteType } from '../../typings';
+import { DateTimePickerComponent } from '../../../components';
+import { addNewSite, editSite } from '../../../services';
+import { SiteType } from '../../../typings';
 
 import styles from './add-site.style';
 

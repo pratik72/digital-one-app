@@ -9,6 +9,9 @@ const styles = StyleSheet.create({
         justifyContent: "flex-end",
         marginTop: 10,
         marginHorizontal: 10
+    },
+    btnStyle: {
+        marginHorizontal: 5
     }
 });
 

@@ -1,7 +1,7 @@
 import moment from 'moment';
 import React, { useState } from 'react';
 import { Text, View } from 'react-native';
-import { Button, DataTable } from 'react-native-paper';
+import { Button, Colors, DataTable, IconButton } from 'react-native-paper';
 import styles from './view-site.style';
 
 
@@ -18,12 +18,23 @@ export const ViewSiteScreen = (props: any) => {
       })
     }
 
+    const openSiteSettig = () => {
+      props.navigation.push('SiteSetting', {
+        siteDetails,
+      })
+    }
+
     return (
       <View style={styles.container}>
         <View style={styles.btnContainer}>
-          <Button mode="outlined" uppercase={false} onPress={openEditSite}>
-            <Text style={{fontSize: 16}}>{'Edit Site'}</Text>
+          <Button mode="outlined" uppercase={false} onPress={openEditSite} style={styles.btnStyle}>
+            <Text style={{fontSize: 16}}>{'Edit'}</Text>
           </Button>
+          <Button mode="outlined" uppercase={false} onPress={openSiteSettig} style={styles.btnStyle}>
+            <Text style={{fontSize: 16}}>{'Setting'}</Text>
+          </Button>
+          
+          
         </View>
 
         <View>

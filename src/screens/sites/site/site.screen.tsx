@@ -4,7 +4,7 @@ import {
   View
 } from 'react-native';
 import { Button } from 'react-native-paper';
-import { SitesListing } from '../../components/listing/sites-listing/sites-listing.component';
+import { SitesListing } from '../../../components/listing/sites-listing/sites-listing.component';
 
 import styles from './site.style';
 
@@ -29,6 +29,10 @@ export class SiteScreen extends Component<any, any> {
     this.props.navigation.push('AddSite', {refreshSiteData: this.refreshSiteData})
   }
 
+  openWorkCategory = () => {
+    this.props.navigation.push('WorkCategory')
+  }
+
   refreshSiteData = () => {
     this.setState({
       refreshFlag: Math.floor(Math.random() * 6) + 1 
@@ -43,7 +47,7 @@ export class SiteScreen extends Component<any, any> {
             <Text style={{fontSize: 16}}>{'Add Site'}</Text>
           </Button>
 
-          <Button mode="outlined" uppercase={false}>
+          <Button mode="outlined" uppercase={false} onPress={this.openWorkCategory}>
             <Text style={{fontSize: 16}}>{'Manage Category'}</Text>
           </Button>
         </View>
