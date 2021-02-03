@@ -6,11 +6,11 @@ import {
     Text,
   View
 } from 'react-native';
-import MultiSelect from 'react-native-multiple-select';
 import { Button, HelperText, TextInput } from 'react-native-paper';
+import { connect } from 'react-redux';
 import * as Yup from 'yup';
-import { DateTimePickerComponent } from '../../../components';
-import { addNewSite, editSite, getAllUsersDetails, getAllWorkCategory, getSiteSettings } from '../../../services';
+import { DateTimePickerComponent, MultiSelect } from '../../../components';
+import { addNewSite, editSite, getAllUsersDetails, getAllWorkCategory, getSiteSettings, updateSiteSettings } from '../../../services';
 import { ISiteRules, SiteType } from '../../../typings';
 
 import styles from './site-setting.style';
@@ -24,12 +24,42 @@ const siteSchema= Yup.object().shape({
   }),
   siteEstimate: Yup.string().required()
 });
-export class SiteSettingScreen extends Component<any, any> {
+
+const mapStateToProps = (state: any) => {
+  return {
+    user: state.user
+  };
+};
+
+interface ISiteSettingStates {
+  siteSetting: ISiteRules,
+  currentSite: any,
+  allWorkCategory: Array<any>,
+  allWorkCategoryAsOption: Array<any>,
+
+  allUsersDetails: Array<any>,
+  allUsersAsOption: Array<any>,
+
+  adminUsersOpt: Array<any>,
+  supervisorsOpt: Array<any>,
+  userExpenseOpt: Array<any>,
+  workCategoryOpt: Array<any>,
+}
+
+const VIEW_NAMES = {
+  ADMIN_VIEW: "ADMIN_VIEW",
+  SUPERVISOR_VIEW: "SUPERVISOR_VIEW",
+  EXPENSE_USERS_VIEW: "EXPENSE_USERS_VIEW",
+  WORK_CATEGORY_VIEW: "WORK_CATEGORY_VIEW"
+}
+
+class SiteSettingScreen extends Component<any, ISiteSettingStates> {
 
   constructor(props: any) {
     super(props);
     this.state = {
       siteSetting: {} as ISiteRules,
+      currentSite: this.props.route.params.siteDetails || {},
       allWorkCategory: [],
       allWorkCategoryAsOption: [],
 
@@ -48,7 +78,7 @@ export class SiteSettingScreen extends Component<any, any> {
   }
 
   fetchSiteSetting = async () => {
-    var respond = await getSiteSettings({siteId: this.props.currentSite.siteId,userId: this.props.user.user_id});
+    var respond = await getSiteSettings({siteId: this.state.currentSite?.siteId, userId: this.props.user.user_id});
     if (respond.data) {
       this.setState({
         siteSetting: respond.data
@@ -70,13 +100,17 @@ export class SiteSettingScreen extends Component<any, any> {
         const element = respond.data[index];
         tempWorkCategory.push({
           value: element.workId,
-          label: element.WorkTypes
+          label: element.WorkTypes,
+          id: element.workId,
+          name: element.WorkTypes,
         });
 
         if(alreadyExistWorkType.indexOf(element.workId) > -1 ){
           selectedWorkType.push({
             value: element.workId,
-            label: element.WorkTypes
+            label: element.WorkTypes,
+            id: element.workId,
+            name: element.WorkTypes,
           });
         }
         
@@ -98,8 +132,10 @@ export class SiteSettingScreen extends Component<any, any> {
         const element = respond.data[index];
         userOptions.push({
           value: element.user_id,
+          id: element.user_id,
           label: `${element.firstName} ${element.lastName}`,
-          isFixed: element.user_id === this.props.currentSite.createdBy,
+          name: element.user_id,
+          disabled: element.user_id === this.state.currentSite.createdBy,
         });
       }
 
@@ -149,31 +185,77 @@ export class SiteSettingScreen extends Component<any, any> {
     });
   }
 
-  saveSiteData = async (siteData: FormikValues) => {
-    const {siteDetails} = this.props.route.params;
-    const isEditSite = siteDetails && siteDetails.siteId;
-    const { ownerContactNo, ownerName, siteAddress, siteEstimate, siteInaugurationDate, siteName, tentativeDeadline } = siteData;
-    
-    const newSiteData: SiteType = {
-      ownerContactNo,
-      ownerName,
-      siteAddress,
-      siteEstimate,
-      siteInaugurationDate,
-      siteName,
-      tentativeDeadline
+  
+  handleSubmit = async () => {
+    const body = {
+      adminUsers: this.getDataFromView(VIEW_NAMES.ADMIN_VIEW),
+      supervisors: this.getDataFromView(VIEW_NAMES.SUPERVISOR_VIEW),
+      userExpense: this.getDataFromView(VIEW_NAMES.EXPENSE_USERS_VIEW),
+      workCategories: this.getDataFromView(VIEW_NAMES.WORK_CATEGORY_VIEW),
     };
-
-    var siteCreated = await ( isEditSite ? editSite({...newSiteData, siteId: siteDetails.siteId }) : addNewSite(newSiteData));;
-    if (siteCreated && siteCreated.data) {
-      if(this.props.route.params && this.props.route.params.refreshSiteData){
-        this.props.navigation.goBack()
-        this.props.route.params.refreshSiteData();
-        if(isEditSite && this.props.route.params.setSiteDetails){
-          this.props.route.params.setSiteDetails({...newSiteData, siteId: siteDetails.siteId });
-        }
-      }
+    
+    const updateData = await updateSiteSettings({siteId: this.state.currentSite.siteId, body});
+    if(updateData.data){
+      this.goBack();
     }
+  }
+
+  getDataFromView = (userType: string) => {
+    const newUserArray: any = [];
+    const { 
+      adminUsersOpt,
+      supervisorsOpt,
+      userExpenseOpt,
+      workCategoryOpt
+    } = this.state;
+    let arrayLength = 0
+    switch (userType) {
+      case VIEW_NAMES.ADMIN_VIEW:
+        arrayLength = adminUsersOpt ? adminUsersOpt.length : 0;
+        for (let index = 0; index < arrayLength; index++) {
+          const element = adminUsersOpt[index];
+          newUserArray.push({
+            adminUserId: element.value,
+            adminUserName: element.label,
+          });
+        }
+        break;
+      case VIEW_NAMES.SUPERVISOR_VIEW:
+        arrayLength = supervisorsOpt ? supervisorsOpt.length : 0;
+        for (let index = 0; index < arrayLength; index++) {
+          const element = supervisorsOpt[index];
+          newUserArray.push({
+            supervisorId: element.value,
+            supervisorName: element.label,
+          });
+        }
+        break;
+      case VIEW_NAMES.EXPENSE_USERS_VIEW:
+        arrayLength = userExpenseOpt ? userExpenseOpt.length : 0;
+        for (let index = 0; index < arrayLength; index++) {
+          const element = userExpenseOpt[index];
+          newUserArray.push({
+            expenseUserId: element.value,
+            expenseUserName: element.label,
+          });
+        }
+      break;
+      case VIEW_NAMES.WORK_CATEGORY_VIEW:
+        arrayLength = workCategoryOpt ? workCategoryOpt.length : 0;
+        for (let index = 0; index < arrayLength; index++) {
+          const element = workCategoryOpt[index];
+          newUserArray.push({
+            workCategoryId: element.value,
+            workType: element.label,
+          });
+        }
+      break;
+    
+      default:
+        break;
+    }
+
+    return newUserArray;
   }
 
   setFocusOnNextField = (refKey: string) => {
@@ -189,45 +271,50 @@ export class SiteSettingScreen extends Component<any, any> {
     this.props.navigation.goBack()
   }
 
-  multiSelect: any;
-
-  onSelectedItemsChange = (adminUsersOpt: any) => {
-    this.setState({ adminUsersOpt });
+  handleChangeData = (selectedItems: any, stateKey: string) => {
+    this.setState({ [stateKey]: selectedItems });
   };
 
   render() {
-    const {allUsersAsOption} = this.state;
+    const {allUsersAsOption, adminUsersOpt} = this.state;
     return (
       <View style={styles.container}>
-        <View style={styles.btnContainer}>
-          <MultiSelect
-            hideTags
-            items={allUsersAsOption}
-            uniqueKey="id"
-            ref={(component) => { this.multiSelect = component }}
-            onSelectedItemsChange={this.onSelectedItemsChange}
-            selectedItems={this.state.selectedItems}
-            selectText="Pick Items"
-            searchInputPlaceholderText="Search Items..."
-            onChangeInput={ (text)=> console.log(text)}
-            altFontFamily="ProximaNova-Light"
-            tagRemoveIconColor="#CCC"
-            tagBorderColor="#CCC"
-            tagTextColor="#CCC"
-            selectedItemTextColor="#CCC"
-            selectedItemIconColor="#CCC"
-            itemTextColor="#000"
-            displayKey="name"
-            searchInputStyle={{ color: '#CCC' }}
-            submitButtonColor="#CCC"
-            submitButtonText="Submit"
-          />
-          <View>
-            {this.multiSelect?.getSelectedItemsExt(this.state.selectedItems)}
-          </View>
+        <View style={{flex: 1}}>
+          <ScrollView>
+            
+            <View style={styles.btnContainer}>
+              <Text style={styles.labelText}>Admin Users</Text>
+              <MultiSelect values={this.state.adminUsersOpt} items={this.state.allUsersAsOption} onChange={(data: any)=>this.handleChangeData(data, 'adminUsersOpt')}/>
+            </View>
+
+            <View style={styles.btnContainer}>
+              <Text style={styles.labelText}>Supervisors</Text>
+              <MultiSelect values={this.state.supervisorsOpt} items={this.state.allUsersAsOption} onChange={(data: any)=>this.handleChangeData(data, 'supervisorsOpt')}/>
+            </View>
+
+            <View style={styles.btnContainer}>
+              <Text style={styles.labelText}>Expense Users</Text>
+              <MultiSelect values={this.state.userExpenseOpt} items={this.state.allUsersAsOption} onChange={(data: any)=>this.handleChangeData(data, 'userExpenseOpt')}/>
+            </View>
+
+            <View style={styles.btnContainer}>
+              <Text style={styles.labelText}>Site Category</Text>
+              <MultiSelect values={this.state.workCategoryOpt} items={this.state.allWorkCategoryAsOption} onChange={(data: any)=>this.handleChangeData(data, 'workCategoryOpt')}/>
+            </View>
+          </ScrollView>
+        </View>
+        <View style={{ flexDirection: 'row', margin: 5}}>
+          <Button mode="contained" onPress={this.handleSubmit} uppercase={false} style={styles.btn}>
+            <Text style={{fontSize: 16}}>{'Save'}</Text>
+          </Button>
+          <Button mode="outlined" onPress={this.goBack} uppercase={false} style={styles.btn}>
+            <Text style={{fontSize: 16}}>{'Cancel'}</Text>
+          </Button>
         </View>
 
       </View>
     );
   }
 }
+
+export default connect(mapStateToProps, {})(SiteSettingScreen);

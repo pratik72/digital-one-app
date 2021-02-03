@@ -14,7 +14,7 @@ import { setUser } from '../reducers/actions';
 import { ViewSiteScreen } from '../screens/sites/view-site/view-site.screen';
 import { AddSiteScreen } from '../screens/sites/add-site/add-site.screen';
 import { WorkCategory } from '../screens/work-cetegory/work-category.component';
-import { SiteSettingScreen } from '../screens/sites/site-setting/site-setting.screen';
+import SiteSettingScreen from '../screens/sites/site-setting/site-setting.screen';
 
 const Drawer = createDrawerNavigator();
 const SiteStack = createStackNavigator();

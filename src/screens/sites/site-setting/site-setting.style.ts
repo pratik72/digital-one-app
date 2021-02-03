@@ -19,6 +19,14 @@ const styles = StyleSheet.create({
     btn: {
         flex: 1,
         marginHorizontal: 5
+    },
+    labelText: {
+        fontSize: 16,
+        marginBottom: 10,
+        fontWeight: 'bold',
+        borderBottomWidth: 1,
+        paddingVertical: 7,
+        borderColor: '#0000001f'
     }
 });
 

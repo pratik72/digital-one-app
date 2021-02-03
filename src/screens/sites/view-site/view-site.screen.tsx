@@ -19,9 +19,7 @@ export const ViewSiteScreen = (props: any) => {
     }
 
     const openSiteSettig = () => {
-      props.navigation.push('SiteSetting', {
-        siteDetails,
-      })
+      props.navigation.push('SiteSetting' , {siteDetails})
     }
 
     return (
