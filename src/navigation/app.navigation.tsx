@@ -4,7 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
 import { SiteScreen } from '../screens/sites/site/site.screen';
-import { WorkReportScreen } from '../screens/work-report/work-report.screen';
+import { WorkReportScreen } from '../screens/work-reports/work-report/work-report.screen';
 import { HeaderComponent } from '../components';
 import LoginScreen from '../screens/login/login.screen';
 import {store} from "../reducers/store";
@@ -15,13 +15,12 @@ import { ViewSiteScreen } from '../screens/sites/view-site/view-site.screen';
 import { AddSiteScreen } from '../screens/sites/add-site/add-site.screen';
 import { WorkCategory } from '../screens/work-cetegory/work-category.component';
 import SiteSettingScreen from '../screens/sites/site-setting/site-setting.screen';
+import AddWorkReport from '../screens/work-reports/add-work-report/add-work-report.screen';
 
 const Drawer = createDrawerNavigator();
 const SiteStack = createStackNavigator();
 const WorkReportStack = createStackNavigator();
 const AuthStack = createStackNavigator();
-
-const isLoggedIn = false;
 
 const hideHeaderOpt = {
     headerShown: false
@@ -62,6 +61,10 @@ const workReportNavigator = () => {
             <WorkReportStack.Screen name="Work Report" component={WorkReportScreen} options={{
                   title: "Work Report",
                 }}/>
+            <WorkReportStack.Screen name="Add Work Report" component={AddWorkReport} options={{
+                  title: "Add Work Report",
+                }}/>
+                
         </WorkReportStack.Navigator>
     );
 }

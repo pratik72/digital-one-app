@@ -22,9 +22,11 @@ export class MultiSelect extends Component<IMultiSelectProps, IMultiSelectStates
     super(props);
     this.state = {
       values: this.props.values || [] as Array<IItemObject>,
+      value: this.props.value || {} as IItemObject,
       dialogVisible: false,
       items: this.props.items || [] as Array<IItemObject>,
-      selectedItems: [] as Array<IItemObject>
+      selectedItems: [] as Array<IItemObject>,
+      disabled: this.props.disabled || false
     }
   }
 
@@ -34,7 +36,19 @@ export class MultiSelect extends Component<IMultiSelectProps, IMultiSelectStates
   componentDidUpdate = (prevProps: IMultiSelectProps) => {
     if(this.props.values != prevProps.values){
       this.setState({
-        values: this.props.values
+        values: this.props.values || [] as Array<IItemObject>
+      });
+    }
+
+    if(this.props.value != prevProps.value){
+      this.setState({
+        value: this.props.value || {} as IItemObject
+      });
+    }
+
+    if(this.props.disabled != prevProps.disabled){
+      this.setState({
+        disabled: this.props.disabled || false
       });
     }
 
@@ -54,41 +68,68 @@ export class MultiSelect extends Component<IMultiSelectProps, IMultiSelectStates
   }
 
   openDialog = () => {
-    const selectedUserIds = this.state.values.map((obj)=>obj.id);
-    const selectedItems = this.state.items.map((obj)=>{
-      return selectedUserIds.includes(obj.id) ? {...obj, selected: true } : {...obj, selected: false };
-    });
-    this.setState({
-      dialogVisible: true,
-      items: selectedItems
-    })
+    if(this.props.multiple){
+      const selectedUserIds = this.state.values.map((obj)=>obj.id);
+      const selectedItems = this.state.items.map((obj)=>{
+        return selectedUserIds.includes(obj.id) ? {...obj, selected: true } : {...obj, selected: false };
+      });
+      this.setState({
+        dialogVisible: true,
+        items: selectedItems
+      });
+    }else{
+      const selectedItems = this.state.items.map((obj)=>{
+        return obj.id == this.state.value.id ? {...obj, selected: true } : {...obj, selected: false };
+      });
+      this.setState({
+        dialogVisible: true,
+        items: selectedItems
+      });
+    }
   }
 
   closeDialog = () => {
-    const values = this.state.items.filter((obj)=>{
-      return obj.selected && obj
-    });
-    this.setState({
-      dialogVisible: false,
-      values,
-    }, ()=>{
-      this.props.onChange(values);
-    })
+    if(this.props.multiple){
+      const values = this.state.items.filter((obj)=>{
+        return obj.selected && obj
+      });
+      this.setState({
+        dialogVisible: false,
+        values,
+      }, ()=>{
+        this.props.onChange(values);
+      });
+    }else{
+      this.setState({
+        dialogVisible: false,
+      }, ()=>{
+        this.props.onChange(this.state.value);
+      });
+    }
   }
 
-  toggleItem = (item: IItemObject) => {
-    const unique = [...this.state.selectedItems, item];
-    const items = this.state.items.map((obj)=>{
-      return obj.id == item.id ? {...obj, selected: !item.selected}: obj
-    });
-    this.setState({
-      items
-    });
+  onItemSelect = (item: IItemObject) => {
+    if(this.props.multiple){
+      const items = this.state.items.map((obj)=>{
+        return obj.id == item.id ? {...obj, selected: !item.selected}: obj
+      });
+      this.setState({
+        items
+      });
+    }else{
+      const items = this.state.items.map((obj)=>{
+        return obj.id == item.id ? {...obj, selected: true}: {...obj, selected: false}
+      });
+      this.setState({
+        items,
+        value: item
+      }, this.closeDialog);
+    }
   }
 
   renderUserList = ({item}:{item:IItemObject}) => {
     return (
-      <TouchableOpacity key={item.id} style={[styles.listRow, item?.selected ? { backgroundColor: '#3f51b526'} : {}, item.disabled ? styles.disabledRow : {}]} disabled={item.disabled} onPress={this.toggleItem.bind(null, item)}>
+      <TouchableOpacity key={item.id} style={[styles.listRow, item?.selected ? { backgroundColor: '#3f51b526'} : {}, item.disabled ? styles.disabledRow : {}]} disabled={item.disabled} onPress={this.onItemSelect.bind(null, item)}>
         <Text style={[styles.listText, item.disabled ? styles.disabledText : {}]}>{item.label}</Text>
       </TouchableOpacity>
     );
@@ -104,15 +145,24 @@ export class MultiSelect extends Component<IMultiSelectProps, IMultiSelectStates
     return (
       <View style={styles.container}>
         <View style={styles.chipContainer}>
-          {this.state.values.map((obj:any,index)=>(
+          {this.props.multiple && this.state.values.map((obj:any,index)=>(
             <Chip key={obj.id} onPress={() => console.log('Pressed')} style={styles.chipStyle} onClose={()=>this.removeChip(obj, index)} disabled={obj.disabled}>
               {obj.label}
             </Chip>
           )
           )}
-          <Button mode="outlined" uppercase={false} onPress={this.openDialog} style={styles.btnStyle}>
-            <Text style={{fontSize: 16}}>{'Add'}</Text>
-          </Button>
+          {this.props.multiple &&
+            <Button mode="outlined" uppercase={false} onPress={this.openDialog} style={styles.btnStyle}>
+              <Text style={{fontSize: 16}}>Add</Text>
+            </Button>
+          }
+
+          {!this.props.multiple &&
+             <TouchableOpacity onPress={this.openDialog} style={{backgroundColor: '#e7e7e7', paddingHorizontal: 10, paddingVertical: 10, flex: 1}} disabled={this.state.disabled}>
+              <Text style={{color:'#6d6d6d', fontSize: 12}}>{this.props.label || 'Select'}</Text>
+                {!!this.state.value.label && <Text style={{fontSize: 16, marginTop: 5}}>{this.state.value.label}</Text>}
+            </TouchableOpacity>
+          }
         </View>
 
           <Modal
@@ -133,11 +183,11 @@ export class MultiSelect extends Component<IMultiSelectProps, IMultiSelectStates
                 />
                
               </View>
-              <View>
+              {this.props.multiple && <View>
                 <TouchableOpacity style={{...styles.btnStyle, ...styles.btnStyle2}} onPress={this.closeDialog}>
                   <Text style={styles.btnText}>Done</Text>
                 </TouchableOpacity>
-              </View>
+              </View>}
             </View>
         </Modal>
 

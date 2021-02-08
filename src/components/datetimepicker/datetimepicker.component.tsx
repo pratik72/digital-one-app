@@ -1,8 +1,8 @@
 import React, {useState} from 'react';
-import {View, Button, Platform, Keyboard} from 'react-native';
+import {View, Platform, Keyboard, Text} from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { TextInput } from 'react-native-paper';
 import moment from 'moment';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 export const DateTimePickerComponent = (props: any) => {
   const [date, setDate] = useState(props.values || new Date(1598051730000));
@@ -33,12 +33,10 @@ export const DateTimePickerComponent = (props: any) => {
   return (
     <View>
       <View>
-        <TextInput
-            label={props.label || 'Date'}
-            value={moment(date).format('DD/MM/YYYY')}
-            onFocus={showDatepicker}
-            onChangeText={props.handleChange}
-        />
+        <TouchableOpacity onPress={showDatepicker} style={{backgroundColor: '#e7e7e7', paddingHorizontal: 10, paddingVertical: 10}}>
+          <Text style={{color:'#6d6d6d', fontSize: 12}}>{props.label || 'Date'}</Text>
+          <Text style={{fontSize: 16, marginTop: 5}}>{moment(date).format('DD/MM/YYYY')}</Text>
+        </TouchableOpacity>
         {/* <Button onPress={showDatepicker} title="Show date picker!" /> */}
       </View>
       {show && (
