@@ -16,6 +16,8 @@ import { AddSiteScreen } from '../screens/sites/add-site/add-site.screen';
 import { WorkCategory } from '../screens/work-cetegory/work-category.component';
 import SiteSettingScreen from '../screens/sites/site-setting/site-setting.screen';
 import AddWorkReport from '../screens/work-reports/add-work-report/add-work-report.screen';
+import { ViewWorkReportScreen } from '../screens/work-reports/view-work-report/view-work-report.screen';
+import { NAVIGATION } from '../constants';
 
 const Drawer = createDrawerNavigator();
 const SiteStack = createStackNavigator();
@@ -33,19 +35,19 @@ const siteNavigator = () => {
           screenOptions={{
             header: (props) => <HeaderComponent {...props} />,
           }}>
-            <SiteStack.Screen name="Site" component={SiteScreen} options={{
+            <SiteStack.Screen name={NAVIGATION.SITE} component={SiteScreen} options={{
                   title: "Site",
                 }}/>
-            <SiteStack.Screen name="ViewSite" component={ViewSiteScreen} options={{
+            <SiteStack.Screen name={NAVIGATION.VIEW_SITE} component={ViewSiteScreen} options={{
                   title: "View Site",
                 }}/>
-            <SiteStack.Screen name="AddSite" component={AddSiteScreen} options={{
+            <SiteStack.Screen name={NAVIGATION.ADD_SITE} component={AddSiteScreen} options={{
                   title: "Add Site",
                 }}/>
-            <SiteStack.Screen name="WorkCategory" component={WorkCategory} options={{
+            <SiteStack.Screen name={NAVIGATION.WORK_CATEGORY} component={WorkCategory} options={{
                   title: "Work Category",
                 }}/>
-            <SiteStack.Screen name="SiteSetting" component={SiteSettingScreen} options={{
+            <SiteStack.Screen name={NAVIGATION.SITE_SETTING} component={SiteSettingScreen} options={{
                   title: "Site Settings",
                 }}/>
         </SiteStack.Navigator>
@@ -58,11 +60,14 @@ const workReportNavigator = () => {
           screenOptions={{
             header: (props) => <HeaderComponent {...props} />,
           }}>
-            <WorkReportStack.Screen name="Work Report" component={WorkReportScreen} options={{
+            <WorkReportStack.Screen name={NAVIGATION.WORK_REPORT} component={WorkReportScreen} options={{
                   title: "Work Report",
                 }}/>
-            <WorkReportStack.Screen name="Add Work Report" component={AddWorkReport} options={{
+            <WorkReportStack.Screen name={NAVIGATION.ADD_WORK_REPORT} component={AddWorkReport} options={{
                   title: "Add Work Report",
+                }}/>
+            <WorkReportStack.Screen name={NAVIGATION.VIEW_WORK_REPORT} component={ViewWorkReportScreen} options={{
+                  title: "View Work Report",
                 }}/>
                 
         </WorkReportStack.Navigator>
@@ -82,9 +87,9 @@ const LogoutDrawerContent = (props: any) => {
            store.dispatch(setUser(""));
            props.navigation.reset({
             index: 0,
-            routes: [{ name: 'Auth' }],
+            routes: [{ name: NAVIGATION.AUTH }],
           });
-           props.navigation.navigate('Auth')
+           props.navigation.navigate(NAVIGATION.AUTH)
         }
       }} />
     </DrawerContentScrollView>
@@ -95,9 +100,9 @@ const MainStack = createStackNavigator();
 
 const DrawerNavigator = () => {
   return (
-    <Drawer.Navigator initialRouteName="Home" drawerContent={props => <LogoutDrawerContent {...props} />}>
-      <Drawer.Screen name="Home" component={siteNavigator} />
-      <Drawer.Screen name="Work Report" component={workReportNavigator} />
+    <Drawer.Navigator initialRouteName={NAVIGATION.HOME} drawerContent={props => <LogoutDrawerContent {...props} />}>
+      <Drawer.Screen name={NAVIGATION.HOME} component={siteNavigator} />
+      <Drawer.Screen name={NAVIGATION.WORK_REPORT} component={workReportNavigator} />
     </Drawer.Navigator>
   )
 }
@@ -105,7 +110,7 @@ const DrawerNavigator = () => {
 const AuthNavigator = () => {
   return (
     <AuthStack.Navigator>
-        <AuthStack.Screen name="Login" component={LoginScreen} options={{
+        <AuthStack.Screen name={NAVIGATION.LOGIN} component={LoginScreen} options={{
               title: "Login",
               ...hideHeaderOpt
             }}/>
@@ -115,12 +120,12 @@ const AuthNavigator = () => {
 
 const AppContainer = () => {
   const user = store && store.getState().user;
-  const initialRoute = user && user.token ? "Home" : "Auth";
+  const initialRoute = user && user.token ? NAVIGATION.HOME : NAVIGATION.AUTH;
   return (
     <NavigationContainer>
       <MainStack.Navigator initialRouteName={initialRoute} screenOptions={{...hideHeaderOpt}}>
-        <MainStack.Screen name="Home" component={DrawerNavigator} />
-        <MainStack.Screen name="Auth" component={AuthNavigator} />
+        <MainStack.Screen name={NAVIGATION.HOME} component={DrawerNavigator} />
+        <MainStack.Screen name={NAVIGATION.AUTH} component={AuthNavigator} />
       </MainStack.Navigator>
     </NavigationContainer>
   );

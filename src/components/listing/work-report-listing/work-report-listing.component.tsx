@@ -7,6 +7,7 @@ import { useSelector } from "react-redux";
 import { IWorkReportTypes, SiteType } from "../../../typings";
 import { FlatList, View } from "react-native";
 import { DataTable } from "react-native-paper";
+import { COMMON, NAVIGATION } from "../../../constants";
 
 export const WorkReportListing = (props: any) => {
 
@@ -26,7 +27,7 @@ export const WorkReportListing = (props: any) => {
 
 
   const viewWorkReport = (currentWorkReport: IWorkReportTypes) => {
-    props.navigation.push('ViewWorkReport', {
+    props.navigation.push(NAVIGATION.VIEW_WORK_REPORT, {
       currentWorkReport,
       refreshData: props.refreshData
     })
@@ -38,7 +39,7 @@ export const WorkReportListing = (props: any) => {
       <DataTable.Cell>{item.workId}</DataTable.Cell>
       <DataTable.Cell>{item.supervisorName}</DataTable.Cell>
       <DataTable.Cell>{item.siteName}</DataTable.Cell>
-      <DataTable.Cell>{moment(item.date).format('DD/MM/YYYY')}</DataTable.Cell>
+      <DataTable.Cell>{moment(item.date).format(COMMON.DATE_FORMAT)}</DataTable.Cell>
     </DataTable.Row>
     )
   }

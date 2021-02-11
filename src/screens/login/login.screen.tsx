@@ -15,6 +15,7 @@ import styles from './login.style';
 import { login } from '../../services';
 import { setUser } from '../../reducers/actions';
 import { connect } from 'react-redux';
+import { NAVIGATION } from '../../constants';
 
 interface ILoginState {
   showPassword: boolean;
@@ -59,9 +60,9 @@ class LoginScreen extends Component<any, ILoginState> {
   loadHomeScreen = () => {
     this.props.navigation.reset({
       index: 0,
-      routes: [{ name: 'Home' }],
+      routes: [{ name: NAVIGATION.HOME }],
     });
-    this.props.navigation.navigate('Home')
+    this.props.navigation.navigate(NAVIGATION.HOME)
   }
 
   togglePassword = (event: GestureResponderEvent) => {

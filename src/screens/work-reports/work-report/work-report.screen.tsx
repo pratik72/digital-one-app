@@ -5,6 +5,7 @@ import {
 } from 'react-native';
 import { Button } from 'react-native-paper';
 import { WorkReportListing } from '../../../components/listing/work-report-listing/work-report-listing.component';
+import { NAVIGATION } from '../../../constants';
 
 import styles from './work-report.style';
 
@@ -19,7 +20,7 @@ export class WorkReportScreen extends Component<any, any> {
   }
 
   openAddSite = () => {
-    this.props.navigation.push('Add Work Report', {refreshData: this.refreshData})
+    this.props.navigation.push(NAVIGATION.ADD_WORK_REPORT, {refreshData: this.refreshData})
   }
 
   refreshData = () => {

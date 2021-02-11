@@ -6,6 +6,7 @@ import moment from "moment";
 import { SiteType } from "../../../typings";
 import { FlatList, View } from "react-native";
 import { DataTable } from "react-native-paper";
+import { COMMON, NAVIGATION } from "../../../constants";
 
 export const SitesListing = (props: any) => {
 
@@ -23,7 +24,7 @@ export const SitesListing = (props: any) => {
   }, [props.refreshFlag]);
 
   const viewSite = (siteDetails: SiteType) => {
-    props.navigation.push('ViewSite', {
+    props.navigation.push(NAVIGATION.VIEW_SITE, {
       siteDetails,
       refreshSiteData: props.refreshSiteData
     })
@@ -34,7 +35,7 @@ export const SitesListing = (props: any) => {
     <DataTable.Row onPress={()=>viewSite(item)} key={item.siteId}>
       <DataTable.Cell>{item.siteName}</DataTable.Cell>
       <DataTable.Cell>{item.ownerName}</DataTable.Cell>
-      <DataTable.Cell>{moment(item.tentativeDeadline).format('DD/MM/YYYY')}</DataTable.Cell>
+      <DataTable.Cell>{moment(item.tentativeDeadline).format(COMMON.DATE_FORMAT)}</DataTable.Cell>
     </DataTable.Row>
     )
   }

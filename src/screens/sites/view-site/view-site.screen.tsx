@@ -2,6 +2,7 @@ import moment from 'moment';
 import React, { useState } from 'react';
 import { Text, View } from 'react-native';
 import { Button, Colors, DataTable, IconButton } from 'react-native-paper';
+import { COMMON, NAVIGATION } from '../../../constants';
 import styles from './view-site.style';
 
 
@@ -11,7 +12,7 @@ export const ViewSiteScreen = (props: any) => {
 
     const openEditSite = () => {
       const {refreshSiteData} = props.route.params;
-      props.navigation.push('AddSite', {
+      props.navigation.push(NAVIGATION.ADD_SITE, {
         refreshSiteData,
         siteDetails,
         setSiteDetails
@@ -19,7 +20,7 @@ export const ViewSiteScreen = (props: any) => {
     }
 
     const openSiteSettig = () => {
-      props.navigation.push('SiteSetting' , {siteDetails})
+      props.navigation.push(NAVIGATION.SITE_SETTING , {siteDetails})
     }
 
     return (
@@ -74,7 +75,7 @@ export const ViewSiteScreen = (props: any) => {
 
             <DataTable.Row>
               <DataTable.Cell>Start Date</DataTable.Cell>
-              <DataTable.Cell>{moment(siteDetails.tentativeDeadline).format('DD/MM/YYYY')}</DataTable.Cell>
+              <DataTable.Cell>{moment(siteDetails.tentativeDeadline).format(COMMON.DATE_FORMAT)}</DataTable.Cell>
             </DataTable.Row>
 
             <DataTable.Row>
@@ -84,7 +85,7 @@ export const ViewSiteScreen = (props: any) => {
 
             <DataTable.Row>
               <DataTable.Cell>Deadline</DataTable.Cell>
-              <DataTable.Cell>{moment(siteDetails.tentativeDeadline).format('DD/MM/YYYY')}</DataTable.Cell>
+              <DataTable.Cell>{moment(siteDetails.tentativeDeadline).format(COMMON.DATE_FORMAT)}</DataTable.Cell>
             </DataTable.Row>
 
           </DataTable>

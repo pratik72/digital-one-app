@@ -5,6 +5,7 @@ import {
 } from 'react-native';
 import { Button } from 'react-native-paper';
 import { SitesListing } from '../../../components/listing/sites-listing/sites-listing.component';
+import { NAVIGATION } from '../../../constants';
 
 import styles from './site.style';
 
@@ -19,18 +20,15 @@ export class SiteScreen extends Component<any, any> {
   }
 
   componentDidMount = () => {
-    // this.props.navigation.reset({
-    //   index: 0,
-    //   routes: [{ name: 'Home' }],
-    // });
+    
   }
 
   openAddSite = () => {
-    this.props.navigation.push('AddSite', {refreshSiteData: this.refreshSiteData})
+    this.props.navigation.push(NAVIGATION.ADD_SITE, {refreshSiteData: this.refreshSiteData})
   }
 
   openWorkCategory = () => {
-    this.props.navigation.push('WorkCategory')
+    this.props.navigation.push(NAVIGATION.WORK_CATEGORY)
   }
 
   refreshSiteData = () => {

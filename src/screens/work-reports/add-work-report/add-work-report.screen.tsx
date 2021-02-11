@@ -70,6 +70,8 @@ class AddWorkReport extends Component<IProps, any> {
       const allExistingWorks = [...this.props.route.params.currentWorkReport.Works];
       for (let index = 0; index < allExistingWorks.length; index++) {
         const element = allExistingWorks[index];
+        element.totalworker.labour = element.totalworker.labour.toString();
+        element.totalworker.mason = element.totalworker.mason.toString();
         element.workTypeObject = {
           label: element.workType,
           value: element.workId,
@@ -78,7 +80,7 @@ class AddWorkReport extends Component<IProps, any> {
       }
       return {
         Works: allExistingWorks,
-        cementAmount: this.props.route.params.currentWorkReport.cementAmount,
+        cementAmount: this.props.route.params.currentWorkReport.cementAmount.toString(),
         date: moment(this.props.route.params.currentWorkReport.date).toDate(),
         siteObject: {
           value: this.props.route.params.currentWorkReport.siteId,
@@ -129,37 +131,10 @@ class AddWorkReport extends Component<IProps, any> {
 
   componentDidMount = () => {
     this.allSites();
-    if (this.props.route.params.siteDetails && this.props.route.params.siteDetails.siteId) {
+    if (this.props.route.params.currentWorkReport && this.props.route.params.currentWorkReport._id) {
       this.props.navigation.setOptions({
-        title: "Edit Site"
+        title: "Edit Work Report"
       })
-    }
-  }
-
-  saveSiteData = async (siteData: FormikValues) => {
-    const { siteDetails } = this.props.route.params;
-    const isEditSite = siteDetails && siteDetails.siteId;
-    const { ownerContactNo, ownerName, siteAddress, siteEstimate, siteInaugurationDate, siteName, tentativeDeadline } = siteData;
-
-    const newSiteData: SiteType = {
-      ownerContactNo,
-      ownerName,
-      siteAddress,
-      siteEstimate,
-      siteInaugurationDate,
-      siteName,
-      tentativeDeadline
-    };
-
-    var siteCreated = await (isEditSite ? editSite({ ...newSiteData, siteId: siteDetails.siteId }) : addNewSite(newSiteData));;
-    if (siteCreated && siteCreated.data) {
-      if (this.props.route.params && this.props.route.params.refreshSiteData) {
-        this.props.navigation.goBack()
-        this.props.route.params.refreshSiteData();
-        if (isEditSite && this.props.route.params.setSiteDetails) {
-          this.props.route.params.setSiteDetails({ ...newSiteData, siteId: siteDetails.siteId });
-        }
-      }
     }
   }
 
@@ -207,6 +182,7 @@ class AddWorkReport extends Component<IProps, any> {
       siteObject
     } = values;
 
+    const isEdit = this.props.route.params.currentWorkReport && this.props.route.params.currentWorkReport._id;
     const newWorkReportData: IWorkReportTypes = {
       Works,
       cementAmount,
@@ -217,14 +193,14 @@ class AddWorkReport extends Component<IProps, any> {
       siteName: siteObject.label
     };
 
-    const workReportCreated = await ((this.props.route.params.currentWorkReport && this.props.route.params.currentWorkReport._id) ? editWorkReport({...newWorkReportData, _id: this.props.route.params.currentWorkReport._id }) : addNewWorkReport(newWorkReportData));
+    const workReportCreated = await (isEdit ? editWorkReport({...newWorkReportData, _id: this.props.route.params.currentWorkReport._id }) : addNewWorkReport(newWorkReportData));
 
     if (workReportCreated && workReportCreated.data) {
       this.props.navigation.goBack()
         this.props.route.params.refreshData();
-        // if(isEditSite && this.props.route.params.setSiteDetails){
-        //   this.props.route.params.setSiteDetails({...newSiteData, siteId: siteDetails.siteId });
-        // }
+        if(isEdit && this.props.route.params.setWorkReportDetails){
+          this.props.route.params.setWorkReportDetails({...newWorkReportData, _id: this.props.route.params.currentWorkReport._id });
+        }
     }
   }
 
@@ -270,7 +246,7 @@ class AddWorkReport extends Component<IProps, any> {
                         render={arrayHelpers => (
                           <Fragment>
                             {!!props.values.Works.length && props.values.Works.map((workDetails: any, idx: any) => (
-                              <View style={[styles.fieldView, { borderWidth: 1, borderColor: '#dee2e6', backgroundColor: '#007bff', paddingHorizontal: 5, paddingVertical: 7 }]} key={workDetails.id}>
+                              <View style={[styles.fieldView, { borderWidth: 1, borderColor: '#dee2e6', backgroundColor: '#007bff', paddingHorizontal: 5, paddingVertical: 7 }]} key={idx}>
                                 <View style={[{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 5 }]}>
                                   <Text style={[styles.labelText, { width: 200, color: '#fff' }]}>Work Details</Text>
                                   <TouchableOpacity style={{ marginRight: 7 }} onPress={() => {
