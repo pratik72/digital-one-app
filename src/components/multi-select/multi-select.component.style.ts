@@ -19,7 +19,8 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 13,
     borderColor: '#0000001f',
-    borderWidth: 1
+    borderWidth: 1,
+    flex: 1
   },
   btnText: {
     fontSize: 16,
@@ -54,6 +55,11 @@ const styles = StyleSheet.create({
     height: 1,
     width: "100%",
     backgroundColor: "#CEDCCE"
+  },
+
+  btnView: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly'
   },
 
   modalView: {

@@ -183,9 +183,12 @@ export class MultiSelect extends Component<IMultiSelectProps, IMultiSelectStates
                 />
                
               </View>
-              {this.props.multiple && <View>
+              {this.props.multiple && <View style={styles.btnView}>
                 <TouchableOpacity style={{...styles.btnStyle, ...styles.btnStyle2}} onPress={this.closeDialog}>
                   <Text style={styles.btnText}>Done</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={{...styles.btnStyle, ...styles.btnStyle2}} onPress={this.closeDialog}>
+                  <Text style={styles.btnText}>Cancel</Text>
                 </TouchableOpacity>
               </View>}
             </View>

@@ -284,22 +284,22 @@ class SiteSettingScreen extends Component<any, ISiteSettingStates> {
             
             <View style={styles.btnContainer}>
               <Text style={styles.labelText}>Admin Users</Text>
-              <MultiSelect values={this.state.adminUsersOpt} items={this.state.allUsersAsOption} onChange={(data: any)=>this.handleChangeData(data, 'adminUsersOpt')}/>
+              <MultiSelect values={this.state.adminUsersOpt} items={this.state.allUsersAsOption} onChange={(data: any)=>this.handleChangeData(data, 'adminUsersOpt')} multiple={true} />
             </View>
 
             <View style={styles.btnContainer}>
               <Text style={styles.labelText}>Supervisors</Text>
-              <MultiSelect values={this.state.supervisorsOpt} items={this.state.allUsersAsOption} onChange={(data: any)=>this.handleChangeData(data, 'supervisorsOpt')}/>
+              <MultiSelect values={this.state.supervisorsOpt} items={this.state.allUsersAsOption} onChange={(data: any)=>this.handleChangeData(data, 'supervisorsOpt')} multiple={true}/>
             </View>
 
             <View style={styles.btnContainer}>
               <Text style={styles.labelText}>Expense Users</Text>
-              <MultiSelect values={this.state.userExpenseOpt} items={this.state.allUsersAsOption} onChange={(data: any)=>this.handleChangeData(data, 'userExpenseOpt')}/>
+              <MultiSelect values={this.state.userExpenseOpt} items={this.state.allUsersAsOption} onChange={(data: any)=>this.handleChangeData(data, 'userExpenseOpt')} multiple={true}/>
             </View>
 
             <View style={styles.btnContainer}>
               <Text style={styles.labelText}>Site Category</Text>
-              <MultiSelect values={this.state.workCategoryOpt} items={this.state.allWorkCategoryAsOption} onChange={(data: any)=>this.handleChangeData(data, 'workCategoryOpt')}/>
+              <MultiSelect values={this.state.workCategoryOpt} items={this.state.allWorkCategoryAsOption} onChange={(data: any)=>this.handleChangeData(data, 'workCategoryOpt')} multiple={true}/>
             </View>
           </ScrollView>
         </View>
