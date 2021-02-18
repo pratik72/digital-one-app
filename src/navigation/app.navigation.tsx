@@ -18,10 +18,14 @@ import SiteSettingScreen from '../screens/sites/site-setting/site-setting.screen
 import AddWorkReport from '../screens/work-reports/add-work-report/add-work-report.screen';
 import { ViewWorkReportScreen } from '../screens/work-reports/view-work-report/view-work-report.screen';
 import { NAVIGATION } from '../constants';
+import { MaterialsScreen } from '../screens/materials/materials/materials.screen';
+import AddMaterial from '../screens/materials/add-material/add-material.screen'
+import { ViewMaterialScreen } from '../screens/materials/view-material/view-material.screen';
 
 const Drawer = createDrawerNavigator();
 const SiteStack = createStackNavigator();
 const WorkReportStack = createStackNavigator();
+const MaterialsStack = createStackNavigator();
 const AuthStack = createStackNavigator();
 
 const hideHeaderOpt = {
@@ -74,6 +78,26 @@ const workReportNavigator = () => {
     );
 }
 
+const materialsNavigator = () => {
+  return (
+      <MaterialsStack.Navigator 
+        screenOptions={{
+          header: (props) => <HeaderComponent {...props} />,
+        }}>
+          <MaterialsStack.Screen name={NAVIGATION.MATERIALS} component={MaterialsScreen} options={{
+                title: "Materials",
+              }}/>
+          <MaterialsStack.Screen name={NAVIGATION.ADD_MATERIAL} component={AddMaterial} options={{
+                title: "Add Material",
+              }}/>
+          <MaterialsStack.Screen name={NAVIGATION.VIEW_MATERIAL} component={ViewMaterialScreen} options={{
+                title: "View Material",
+              }}/>
+              
+      </MaterialsStack.Navigator>
+  );
+}
+
 const LogoutDrawerContent = (props: any) => {
   return (
     <DrawerContentScrollView {...props}>
@@ -103,6 +127,7 @@ const DrawerNavigator = () => {
     <Drawer.Navigator initialRouteName={NAVIGATION.HOME} drawerContent={props => <LogoutDrawerContent {...props} />}>
       <Drawer.Screen name={NAVIGATION.HOME} component={siteNavigator} />
       <Drawer.Screen name={NAVIGATION.WORK_REPORT} component={workReportNavigator} />
+      <Drawer.Screen name={NAVIGATION.MATERIALS} component={materialsNavigator} />
     </Drawer.Navigator>
   )
 }
