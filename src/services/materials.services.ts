@@ -9,7 +9,7 @@ export const editMaterial = (materialParam: IMaterial) => {
     return post({ url: 'constructionSite/editSiteInventory', body: materialParam })
 };
 
-export const getAllMaterial = () => {
-    return get({ url: 'constructionSite/getSiteInventory'})
+export const getAllMaterial = (siteId: String) => {
+    return get({ url: `constructionSite/getSiteInventory?siteId=${siteId}`})
 };
 

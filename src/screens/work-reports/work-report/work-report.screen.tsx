@@ -15,7 +15,7 @@ export class WorkReportScreen extends Component<any, any> {
   constructor(props: any) {
     super(props);
     this.state = {
-      refreshFlag: 0,
+      refreshFlag: Math.floor(Math.random() * 6) + 1 ,
     };
   }
 

@@ -14,9 +14,11 @@ export const MaterialsListing = (props: any) => {
 
 
   const allWorkReport = async () => {
-    const allWorkReportRespond = await getAllMaterial();
-    if(allWorkReportRespond && allWorkReportRespond.data){
-      setListData(allWorkReportRespond.data);
+    if(props.currentSite.id){
+      const allWorkReportRespond = await getAllMaterial(props.currentSite.id);
+      if(allWorkReportRespond && allWorkReportRespond.data){
+        setListData(allWorkReportRespond.data);
+      }
     }
   }
 
@@ -56,7 +58,7 @@ export const MaterialsListing = (props: any) => {
         <FlatList
           contentContainerStyle={{ alignSelf: 'stretch' }}
           data={listData}
-          keyExtractor={(item: any) => item.workId}
+          keyExtractor={(item: any) => item.metId}
           renderItem={_renderItem}
           refreshing={false}
           onRefresh={allWorkReport}

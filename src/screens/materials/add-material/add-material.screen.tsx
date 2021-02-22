@@ -55,35 +55,37 @@ class AddMaterial extends Component<IProps, any> {
   getMaterialFormObject = () => {
 
     if (this.props.route.params.currentMaterial && this.props.route.params.currentMaterial._id) {
-      const allExistingWorks = [...this.props.route.params.currentMaterial.Works];
-      for (let index = 0; index < allExistingWorks.length; index++) {
-        const element = allExistingWorks[index];
-        element.totalworker.labour = element.totalworker.labour.toString();
-        element.totalworker.mason = element.totalworker.mason.toString();
-        element.workTypeObject = {
-          label: element.workType,
-          value: element.workId,
-        }
-
-      }
+      const {
+        date,
+        siteId,
+        siteName,
+        supervisorId,
+        supervisorName,
+        materialType,
+        materialUnit,
+        materialTotalQuantity,
+        pricePerUnit,
+        invoicePrice,
+        invoiceNo
+      } = this.props.route.params.currentMaterial;
       return {
         
-        date: moment(this.props.route.params.currentMaterial.date).toDate(),
+        date: moment(date).toDate(),
+        siteId,
         siteObject: {
-          value: this.props.route.params.currentMaterial.siteId,
-          label: this.props.route.params.currentMaterial.siteName,
+          value: siteId,
+          label: siteName,
+          id: siteId
         },
-        siteId: this.props.route.params.currentMaterial.siteId,
-        supervisorId: this.props.route.params.currentMaterial.supervisorId,
-        supervisorName: this.props.route.params.currentMaterial.supervisorName,
-        siteName: this.props.route.params.currentMaterial.siteName,
-
-        materialType : this.props.route.params.currentMaterial.materialType,
-        materialUnit : this.props.route.params.currentMaterial.materialUnit,
-        materialTotalQuantity : this.props.route.params.currentMaterial.materialTotalQuantity,
-        pricePerUnit : this.props.route.params.currentMaterial.pricePerUnit,
-        invoicePrice : this.props.route.params.currentMaterial.invoicePrice,
-        invoiceNo : this.props.route.params.currentMaterial.invoiceNo
+        supervisorId,
+        supervisorName,
+        siteName,
+        materialType,
+        materialUnit,
+        materialTotalQuantity,
+        pricePerUnit: pricePerUnit.toString(),
+        invoicePrice: invoicePrice.toString(),
+        invoiceNo
       }
     } else {
       return {
@@ -128,7 +130,7 @@ class AddMaterial extends Component<IProps, any> {
     this.allSites();
     if (this.props.route.params.currentMaterial && this.props.route.params.currentMaterial._id) {
       this.props.navigation.setOptions({
-        title: "Edit Work Report"
+        title: "Edit Material"
       })
     }
   }
@@ -165,7 +167,7 @@ class AddMaterial extends Component<IProps, any> {
     } = values;
 
     const isEdit = this.props.route.params.currentMaterial && this.props.route.params.currentMaterial.metId;
-    const newWorkReportData: IMaterial = {
+    const newMaterialData: IMaterial = {
       date,
       siteId: siteObject.value,
       supervisorId: this.props.user.user_id,
@@ -179,18 +181,19 @@ class AddMaterial extends Component<IProps, any> {
       invoiceNo
     };
 
-    const workReportCreated = await (isEdit ? editMaterial({...newWorkReportData, metId: this.props.route.params.currentMaterial.metId }) : addNewMaterial(newWorkReportData));
+    const workReportCreated = await (isEdit ? editMaterial({...newMaterialData, metId: this.props.route.params.currentMaterial.metId }) : addNewMaterial(newMaterialData));
 
     if (workReportCreated && workReportCreated.data) {
       this.props.navigation.goBack()
         this.props.route.params.refreshData();
-        if(isEdit && this.props.route.params.setWorkReportDetails){
-          this.props.route.params.setWorkReportDetails({...newWorkReportData, _id: this.props.route.params.currentMaterial._id });
+        if(isEdit && this.props.route.params.setMaterialDetails){
+          this.props.route.params.setMaterialDetails({...newMaterialData, _id: this.props.route.params.currentMaterial._id });
         }
     }
   }
 
   render() {
+    const isEdit = this.props.route.params.currentMaterial && this.props.route.params.currentMaterial.metId;
     return (
       <View style={styles.container}>
         <View style={styles.btnContainer}>
@@ -206,7 +209,7 @@ class AddMaterial extends Component<IProps, any> {
 
                     <View>
                       <View>
-                        <MultiSelect value={props.values.siteObject} items={this.state.allSitesAsOption} onChange={(val: any) => { props.setFieldValue('siteObject', val); }} label="Site" />
+                        <MultiSelect value={props.values.siteObject} items={this.state.allSitesAsOption} onChange={(val: any) => { props.setFieldValue('siteObject', val); }} label="Site" disabled={isEdit} />
                         <HelperText type="error" visible={!!props.errors.siteObject?.value}>{ props.errors.siteObject?.value}
                         </HelperText>
                       </View>
@@ -241,7 +244,6 @@ class AddMaterial extends Component<IProps, any> {
                       <View style={styles.fieldView}>
                         <TextInput
                           label="Unit"
-                          keyboardType="number-pad"
                           ref={(ref) => this.setFieldRef(ref, 'materialUnit')}
                           value={props.values.materialUnit}
                           onChangeText={props.handleChange('materialUnit')}

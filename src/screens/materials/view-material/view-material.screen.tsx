@@ -9,21 +9,21 @@ import styles from './view-material.style';
 
 export const ViewMaterialScreen = (props: any) => {
 
-    const [currentWorkReport, setWorkReportDetails] = useState(props.route.params.currentWorkReport);
+    const [currentMaterial, setMaterialDetails] = useState(props.route.params.currentMaterial);
 
-    const openEditSite = () => {
+    const openEditMaterial = () => {
       const {refreshData} = props.route.params;
-      props.navigation.push(NAVIGATION.ADD_WORK_REPORT, {
+      props.navigation.push(NAVIGATION.ADD_MATERIAL, {
         refreshData,
-        currentWorkReport,
-        setWorkReportDetails
+        currentMaterial,
+        setMaterialDetails
       })
     }
 
     return (
       <View style={styles.container}>
         <View style={styles.btnContainer}>
-          <Button mode="outlined" uppercase={false} onPress={openEditSite} style={styles.btnStyle}>
+          <Button mode="outlined" uppercase={false} onPress={openEditMaterial} style={styles.btnStyle}>
             <Text style={{fontSize: 16}}>{'Edit'}</Text>
           </Button>
         </View>
@@ -33,49 +33,46 @@ export const ViewMaterialScreen = (props: any) => {
             <DataTable>
               <DataTable.Row>
                 <DataTable.Cell>Site</DataTable.Cell>
-                <DataTable.Cell>{currentWorkReport.siteName}</DataTable.Cell>
+                <DataTable.Cell>{currentMaterial.siteName}</DataTable.Cell>
               </DataTable.Row>
 
               <DataTable.Row>
                 <DataTable.Cell>Date</DataTable.Cell>
-                <DataTable.Cell>{moment(currentWorkReport.date).format(COMMON.DATE_FORMAT)}</DataTable.Cell>
+                <DataTable.Cell>{moment(currentMaterial.date).format(COMMON.DATE_FORMAT)}</DataTable.Cell>
               </DataTable.Row>
 
               <DataTable.Row>
-                <DataTable.Cell>Cement</DataTable.Cell>
-                <DataTable.Cell>{currentWorkReport.cementAmount}</DataTable.Cell>
+                <DataTable.Cell>Invoice Number</DataTable.Cell>
+                <DataTable.Cell>{currentMaterial.invoiceNo}</DataTable.Cell>
+              </DataTable.Row>
+
+              <DataTable.Row>
+                <DataTable.Cell>Material Name</DataTable.Cell>
+                <DataTable.Cell>{currentMaterial.materialType}</DataTable.Cell>
+              </DataTable.Row>
+
+              <DataTable.Row>
+                <DataTable.Cell>Unit</DataTable.Cell>
+                <DataTable.Cell>{currentMaterial.materialUnit}</DataTable.Cell>
+              </DataTable.Row>
+
+              <DataTable.Row>
+                <DataTable.Cell>Quantity</DataTable.Cell>
+                <DataTable.Cell>{currentMaterial.materialTotalQuantity}</DataTable.Cell>
+              </DataTable.Row>
+
+              <DataTable.Row>
+                <DataTable.Cell>Per Unit Price</DataTable.Cell>
+                <DataTable.Cell>{currentMaterial.pricePerUnit}</DataTable.Cell>
+              </DataTable.Row>
+
+              <DataTable.Row>
+                <DataTable.Cell>Invoice Price</DataTable.Cell>
+                <DataTable.Cell>{currentMaterial.invoicePrice}</DataTable.Cell>
               </DataTable.Row>
 
             </DataTable>
 
-            {!!currentWorkReport.Works.length && currentWorkReport.Works.map((workObj: any, id: any) => (
-              <DataTable key={id}>
-                <DataTable.Row>
-                  <DataTable.Cell>Work Details</DataTable.Cell>
-                </DataTable.Row>
-
-                <DataTable.Row>
-                  <DataTable.Cell>Work Type</DataTable.Cell>
-                  <DataTable.Cell>{workObj.workType}</DataTable.Cell>
-                </DataTable.Row>
-
-                <DataTable.Row>
-                  <DataTable.Cell>Mason</DataTable.Cell>
-                  <DataTable.Cell>{workObj.totalworker.mason}</DataTable.Cell>
-                </DataTable.Row>
-
-                <DataTable.Row>
-                  <DataTable.Cell>Labour</DataTable.Cell>
-                  <DataTable.Cell>{workObj.totalworker.labour}</DataTable.Cell>
-                </DataTable.Row>
-
-                <DataTable.Row>
-                  <DataTable.Cell>Description</DataTable.Cell>
-                  <DataTable.Cell>{workObj.workDescription}</DataTable.Cell>
-                </DataTable.Row>
-
-              </DataTable>
-            ))}
           </ScrollView>
         </View>
       </View>

@@ -4,8 +4,10 @@ import {
   Text
 } from 'react-native';
 import { Button } from 'react-native-paper';
+import { MultiSelect } from '../../../components';
 import { MaterialsListing } from '../../../components/listing/materials-listing/materials-listing.component';
 import { NAVIGATION } from '../../../constants';
+import { getAllSites } from '../../../services';
 
 import styles from './materials.style';
 
@@ -16,11 +18,38 @@ export class MaterialsScreen extends Component<any, any> {
     super(props);
     this.state = {
       refreshFlag: 0,
+      currentSite: {},
+      allSitesAsOption: []
     };
   }
 
   openAddMaterial = () => {
     this.props.navigation.push(NAVIGATION.ADD_MATERIAL, {refreshData: this.refreshData})
+  }
+
+  componentDidMount = () => {
+    this.allSites();
+  }
+
+  allSites = async () => {
+    const respond = await getAllSites();
+    if (respond.data) {
+      const sitesOptions: Array<{}> = [];
+      for (let index = 0; index < respond.data.length; index++) {
+        const element = respond.data[index];
+        sitesOptions.push({
+          value: element.siteId,
+          label: element.siteName,
+          id: element.siteId,
+        });
+      }
+
+      this.setState({
+        allSitesAsOption: sitesOptions,
+        currentSite: sitesOptions[0]
+      }, this.refreshData);
+
+    }
   }
 
   refreshData = () => {
@@ -33,13 +62,17 @@ export class MaterialsScreen extends Component<any, any> {
     return (
       <View style={styles.container}>
         <View style={styles.btnContainer}>
-          <Button mode="outlined" uppercase={false} onPress={this.openAddMaterial}>
-            <Text style={{fontSize: 16}}>{'Add Material'}</Text>
-          </Button>
-
+          <View style={{flex:1, paddingHorizontal: 10 }}>
+            <MultiSelect value={this.state.currentSite} items={this.state.allSitesAsOption} onChange={(val: any) => { this.setState({'currentSite': val}, this.refreshData); }} label="Site" />
+          </View>
+          <View>  
+            <Button mode="outlined" uppercase={false} onPress={this.openAddMaterial}>
+              <Text style={{fontSize: 16}}>{'Add Material'}</Text>
+            </Button>
+          </View>
         </View>
 
-        <MaterialsListing {...this.props} refreshFlag={this.state.refreshFlag} refreshData={this.refreshData} />
+        <MaterialsListing {...this.props} currentSite={this.state.currentSite} refreshFlag={this.state.refreshFlag} refreshData={this.refreshData} />
 
       </View>
     );

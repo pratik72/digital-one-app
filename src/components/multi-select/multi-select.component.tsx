@@ -160,7 +160,7 @@ export class MultiSelect extends Component<IMultiSelectProps, IMultiSelectStates
           {!this.props.multiple &&
              <TouchableOpacity onPress={this.openDialog} style={{backgroundColor: '#e7e7e7', paddingHorizontal: 10, paddingVertical: 10, flex: 1}} disabled={this.state.disabled}>
               <Text style={{color:'#6d6d6d', fontSize: 12}}>{this.props.label || 'Select'}</Text>
-                {!!this.state.value.label && <Text style={{fontSize: 16, marginTop: 5}}>{this.state.value.label}</Text>}
+                {!!this.state.value.label && <Text style={[{fontSize: 16, marginTop: 5}, this.state.disabled ? {color:'#6d6d6d'} : {}]}>{this.state.value.label}</Text>}
             </TouchableOpacity>
           }
         </View>
