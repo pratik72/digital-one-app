@@ -71,6 +71,20 @@ export const ViewMaterialScreen = (props: any) => {
                 <DataTable.Cell>{currentMaterial.invoicePrice}</DataTable.Cell>
               </DataTable.Row>
 
+              <DataTable.Row>
+                <DataTable.Cell>Supplier</DataTable.Cell>
+                <DataTable.Cell>{currentMaterial.supplier}</DataTable.Cell>
+              </DataTable.Row>
+
+              <DataTable.Row>
+                <DataTable.Cell>Remark</DataTable.Cell>
+                <DataTable.Cell>
+                  <View style={{flex: 1}}>
+                    <Text>{`${currentMaterial.remarks || ''}`}</Text>
+                  </View>
+                </DataTable.Cell>
+              </DataTable.Row>
+
             </DataTable>
 
           </ScrollView>

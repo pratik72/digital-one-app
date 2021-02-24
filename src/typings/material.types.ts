@@ -14,4 +14,6 @@ export interface IMaterial {
   invoiceNo : String,
   date : Date;
   siteObject?: IDropdownObject;
+  remarks : String;
+  supplier : String;
 }

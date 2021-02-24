@@ -66,7 +66,9 @@ class AddMaterial extends Component<IProps, any> {
         materialTotalQuantity,
         pricePerUnit,
         invoicePrice,
-        invoiceNo
+        invoiceNo,
+        remarks,
+        supplier
       } = this.props.route.params.currentMaterial;
       return {
         
@@ -85,7 +87,9 @@ class AddMaterial extends Component<IProps, any> {
         materialTotalQuantity,
         pricePerUnit: pricePerUnit.toString(),
         invoicePrice: invoicePrice.toString(),
-        invoiceNo
+        invoiceNo,
+        remarks,
+        supplier
       }
     } else {
       return {
@@ -100,7 +104,9 @@ class AddMaterial extends Component<IProps, any> {
         materialTotalQuantity : "",
         pricePerUnit : "",
         invoicePrice : "",
-        invoiceNo : ""
+        invoiceNo : "",
+        remarks: "",
+        supplier: ""
       }
     }
   }
@@ -163,7 +169,9 @@ class AddMaterial extends Component<IProps, any> {
       materialTotalQuantity,
       pricePerUnit,
       invoicePrice,
-      invoiceNo
+      invoiceNo,
+      supplier,
+      remarks
     } = values;
 
     const isEdit = this.props.route.params.currentMaterial && this.props.route.params.currentMaterial.metId;
@@ -178,7 +186,9 @@ class AddMaterial extends Component<IProps, any> {
       materialTotalQuantity,
       pricePerUnit,
       invoicePrice,
-      invoiceNo
+      invoiceNo,
+      supplier,
+      remarks
     };
 
     const workReportCreated = await (isEdit ? editMaterial({...newMaterialData, metId: this.props.route.params.currentMaterial.metId }) : addNewMaterial(newMaterialData));
@@ -285,6 +295,29 @@ class AddMaterial extends Component<IProps, any> {
                           ref={(ref) => this.setFieldRef(ref, 'invoicePrice')}
                           value={props.values.invoicePrice}
                           onChangeText={props.handleChange('invoicePrice')}
+                          onSubmitEditing={this.setFocusOnNextField.bind(this, 'supplier')}
+                          returnKeyType='next'
+                        />
+                      </View>
+
+                      <View style={styles.fieldView}>
+                        <TextInput
+                          label="Supplier"
+                          ref={(ref) => this.setFieldRef(ref, 'supplier')}
+                          value={props.values.supplier}
+                          onChangeText={props.handleChange('supplier')}
+                          onSubmitEditing={this.setFocusOnNextField.bind(this, 'remarks')}
+                          returnKeyType='next'
+                        />
+                      </View>
+
+                      <View style={styles.fieldView}>
+                        <TextInput
+                          label="Remarks"
+                          multiline={true}
+                          ref={(ref) => this.setFieldRef(ref, 'remarks')}
+                          value={props.values.remarks}
+                          onChangeText={props.handleChange('remarks')}
                           onSubmitEditing={props.handleSubmit}
                           returnKeyType='done'
                         />

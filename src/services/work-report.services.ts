@@ -9,6 +9,6 @@ export const editWorkReport = (siteParam: IWorkReportTypes) => {
     return post({ url: 'constructionSite/editWorkDetails', body: siteParam })
 };
 
-export const getAllWorkReport = () => {
-    return get({ url: 'constructionSite/getWorkDetail'})
+export const getAllWorkReport = (siteId: string) => {
+    return get({ url: `constructionSite/getWorkDetail?siteId=${siteId}`})
 };

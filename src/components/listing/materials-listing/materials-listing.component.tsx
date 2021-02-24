@@ -7,23 +7,24 @@ import { IMaterial } from "../../../typings";
 import { FlatList, View } from "react-native";
 import { DataTable } from "react-native-paper";
 import { COMMON, NAVIGATION } from "../../../constants";
+import { EmptyListItem } from "../..";
 
 export const MaterialsListing = (props: any) => {
 
   const [listData, setListData] = useState([] as Array<IMaterial>);
 
 
-  const allWorkReport = async () => {
+  const allMaterials = async () => {
     if(props.currentSite.id){
-      const allWorkReportRespond = await getAllMaterial(props.currentSite.id);
-      if(allWorkReportRespond && allWorkReportRespond.data){
-        setListData(allWorkReportRespond.data);
+      const allMaterialsRespond = await getAllMaterial(props.currentSite.id);
+      if(allMaterialsRespond && allMaterialsRespond.data){
+        setListData(allMaterialsRespond.data);
       }
     }
   }
 
   useEffect(() => {
-    allWorkReport();
+    allMaterials();
   }, [props.refreshFlag]);
 
 
@@ -36,7 +37,7 @@ export const MaterialsListing = (props: any) => {
 
   const _renderItem = ({item, index}: {item: IMaterial, index: any}) => {
     return (
-    <DataTable.Row onPress={()=>viewMaterial(item)} key={item.metId || index}>
+    <DataTable.Row onPress={()=>viewMaterial(item)}>
       <DataTable.Cell>{item.metId}</DataTable.Cell>
       <DataTable.Cell>{item.supervisorName}</DataTable.Cell>
       <DataTable.Cell>{item.siteName}</DataTable.Cell>
@@ -44,7 +45,6 @@ export const MaterialsListing = (props: any) => {
     </DataTable.Row>
     )
   }
-
   return (
     <View>
       <DataTable>
@@ -58,10 +58,11 @@ export const MaterialsListing = (props: any) => {
         <FlatList
           contentContainerStyle={{ alignSelf: 'stretch' }}
           data={listData}
-          keyExtractor={(item: any) => item.metId}
+          keyExtractor={(item: any) => item._id}
           renderItem={_renderItem}
           refreshing={false}
-          onRefresh={allWorkReport}
+          onRefresh={allMaterials}
+          ListEmptyComponent={EmptyListItem}
         />
       </DataTable>
     </View>

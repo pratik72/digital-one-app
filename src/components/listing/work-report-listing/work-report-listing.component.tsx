@@ -3,11 +3,11 @@ import React, { Fragment, useEffect, useState } from "react";
 import { getAllSites, getAllWorkReport } from "../../../services";
 import styles from './work-report-listing.style';
 import moment from "moment";
-import { useSelector } from "react-redux";
-import { IWorkReportTypes, SiteType } from "../../../typings";
-import { FlatList, View } from "react-native";
+import { IWorkReportTypes } from "../../../typings";
+import { FlatList, Text, View } from "react-native";
 import { DataTable } from "react-native-paper";
 import { COMMON, NAVIGATION } from "../../../constants";
+import { EmptyListItem } from "../..";
 
 export const WorkReportListing = (props: any) => {
 
@@ -15,9 +15,11 @@ export const WorkReportListing = (props: any) => {
 
 
   const allWorkReport = async () => {
-    const allWorkReportRespond = await getAllWorkReport();
-    if(allWorkReportRespond && allWorkReportRespond.data){
-      setListData(allWorkReportRespond.data);
+    if(props.currentSite.id){
+      const allWorkReportRespond = await getAllWorkReport(props.currentSite.id);
+      if(allWorkReportRespond && allWorkReportRespond.data){
+        setListData(allWorkReportRespond.data);
+      }
     }
   }
 
@@ -61,6 +63,7 @@ export const WorkReportListing = (props: any) => {
           renderItem={_renderItem}
           refreshing={false}
           onRefresh={allWorkReport}
+          ListEmptyComponent={EmptyListItem}
         />
       </DataTable>
     </View>

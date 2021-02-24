@@ -7,6 +7,7 @@ import { SiteType } from "../../../typings";
 import { FlatList, View } from "react-native";
 import { DataTable } from "react-native-paper";
 import { COMMON, NAVIGATION } from "../../../constants";
+import { EmptyListItem } from "../..";
 
 export const SitesListing = (props: any) => {
 
@@ -56,6 +57,7 @@ export const SitesListing = (props: any) => {
           renderItem={_renderItem}
           refreshing={false}
           onRefresh={allSites}
+          ListEmptyComponent={EmptyListItem}
         />
       </DataTable>
     </View>
