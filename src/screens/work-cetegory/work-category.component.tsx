@@ -25,6 +25,8 @@ const categorySchema = Yup.object().shape({
 
 export class WorkCategory extends React.PureComponent<any, IState> {
 
+  private xhr: any = {};
+
   public constructor(props: any) {
     super(props);
 
@@ -39,11 +41,22 @@ export class WorkCategory extends React.PureComponent<any, IState> {
     this.fetchAllWorkCategory();
   }
 
+  componentWillUnmount = () => {
+    if (this.xhr.respond && this.xhr.respond.abort) {
+      this.xhr.respond.abort();
+    }
+
+    if (this.xhr.addWorkCatRespond && this.xhr.addWorkCatRespond.abort) {
+      this.xhr.addWorkCatRespond.abort();
+    }
+
+  }
+
   fetchAllWorkCategory = async () => {
-    var respond = await getAllWorkCategory();
-    if (respond.data) {
+    this.xhr.respond = await getAllWorkCategory();
+    if (this.xhr.respond.data) {
       this.setState({
-        allCategory: respond.data
+        allCategory: this.xhr.respond.data
       });
     }
   }
@@ -53,9 +66,9 @@ export class WorkCategory extends React.PureComponent<any, IState> {
     const { editCategory } = this.state;
     if (newWorkCategory) {
       const body = { WorkTypes: newWorkCategory }
-      const respond = await (editCategory?.workId ? editWorkCategory({ body, workId: editCategory.workId }) : addWorkCategory(body));
-      if (respond && respond.data) {
-        Alert.alert("Success", respond.data.message);
+      this.xhr.addWorkCatRespond = await (editCategory?.workId ? editWorkCategory({ body, workId: editCategory.workId }) : addWorkCategory(body));
+      if (this.xhr.addWorkCatRespond && this.xhr.addWorkCatRespond.data) {
+        Alert.alert("Success", this.xhr.addWorkCatRespond.data.message);
         this.setState({
           newWorkCategory: "",
           editCategory: {} as IWorkCategory

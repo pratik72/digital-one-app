@@ -25,6 +25,8 @@ const siteSchema= Yup.object().shape({
 });
 export class AddSiteScreen extends Component<any, any> {
 
+  private xhr: any = {};
+
   getInitialValue = () => {
     const props = this.props;
     if(props.route.params.siteDetails && props.route.params.siteDetails.siteId){
@@ -73,6 +75,12 @@ export class AddSiteScreen extends Component<any, any> {
     }
   }
 
+  componentWillUnmount = () => {
+    if (this.xhr.siteCreated && this.xhr.siteCreated.abort) {
+      this.xhr.siteCreated.abort();
+    }
+  }
+
   saveSiteData = async (siteData: FormikValues) => {
     const {siteDetails} = this.props.route.params;
     const isEditSite = siteDetails && siteDetails.siteId;
@@ -88,8 +96,8 @@ export class AddSiteScreen extends Component<any, any> {
       tentativeDeadline
     };
 
-    var siteCreated = await ( isEditSite ? editSite({...newSiteData, siteId: siteDetails.siteId }) : addNewSite(newSiteData));;
-    if (siteCreated && siteCreated.data) {
+    this.xhr.siteCreated = await ( isEditSite ? editSite({...newSiteData, siteId: siteDetails.siteId }) : addNewSite(newSiteData));;
+    if (this.xhr.siteCreated && this.xhr.siteCreated.data) {
       if(this.props.route.params && this.props.route.params.refreshSiteData){
         this.props.navigation.goBack()
         this.props.route.params.refreshSiteData();

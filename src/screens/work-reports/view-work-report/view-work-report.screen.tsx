@@ -2,7 +2,8 @@ import moment from 'moment';
 import React, { Fragment, useState } from 'react';
 import { Text, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import { Button, DataTable } from 'react-native-paper';
+import { Button } from 'react-native-paper';
+import { LabelValueRow } from '../../../components';
 import { COMMON, NAVIGATION } from '../../../constants';
 import styles from './view-work-report.style';
 
@@ -30,52 +31,24 @@ export const ViewWorkReportScreen = (props: any) => {
 
         <View style={{marginBottom: 1, flex: 1}}>
           <ScrollView>
-            <DataTable>
-              <DataTable.Row>
-                <DataTable.Cell>Site</DataTable.Cell>
-                <DataTable.Cell>{currentWorkReport.siteName}</DataTable.Cell>
-              </DataTable.Row>
+            <View style={styles.scrollWrapper}>
+              <LabelValueRow label="Id" value={currentWorkReport.workId}/>
+              <LabelValueRow label="Site" value={`${currentWorkReport.siteId} - ${currentWorkReport.siteName}`}/>
+              <LabelValueRow label="Date" value={moment(currentWorkReport.date).format(COMMON.DATE_FORMAT)}/>
+              <LabelValueRow label="Cement" value={currentWorkReport.cementAmount}/>
 
-              <DataTable.Row>
-                <DataTable.Cell>Date</DataTable.Cell>
-                <DataTable.Cell>{moment(currentWorkReport.date).format(COMMON.DATE_FORMAT)}</DataTable.Cell>
-              </DataTable.Row>
+              {!!currentWorkReport.Works.length && currentWorkReport.Works.map((workObj: any, id: any) => (
+                <Fragment key={id}>
+                  <LabelValueRow label="Work Details" value={""}/>
+                  <LabelValueRow label="Work Type" value={workObj.workType}/>
+                  <LabelValueRow label="Mason" value={workObj.totalworker.mason}/>
+                  <LabelValueRow label="Labour" value={workObj.totalworker.labour}/>
+                  <LabelValueRow label="Description" value={workObj.workDescription}/>
 
-              <DataTable.Row>
-                <DataTable.Cell>Cement</DataTable.Cell>
-                <DataTable.Cell>{currentWorkReport.cementAmount}</DataTable.Cell>
-              </DataTable.Row>
+                </Fragment>
+              ))}
+            </View>
 
-            </DataTable>
-
-            {!!currentWorkReport.Works.length && currentWorkReport.Works.map((workObj: any, id: any) => (
-              <DataTable key={id}>
-                <DataTable.Row>
-                  <DataTable.Cell>Work Details</DataTable.Cell>
-                </DataTable.Row>
-
-                <DataTable.Row>
-                  <DataTable.Cell>Work Type</DataTable.Cell>
-                  <DataTable.Cell>{workObj.workType}</DataTable.Cell>
-                </DataTable.Row>
-
-                <DataTable.Row>
-                  <DataTable.Cell>Mason</DataTable.Cell>
-                  <DataTable.Cell>{workObj.totalworker.mason}</DataTable.Cell>
-                </DataTable.Row>
-
-                <DataTable.Row>
-                  <DataTable.Cell>Labour</DataTable.Cell>
-                  <DataTable.Cell>{workObj.totalworker.labour}</DataTable.Cell>
-                </DataTable.Row>
-
-                <DataTable.Row>
-                  <DataTable.Cell>Description</DataTable.Cell>
-                  <DataTable.Cell>{workObj.workDescription}</DataTable.Cell>
-                </DataTable.Row>
-
-              </DataTable>
-            ))}
           </ScrollView>
         </View>
       </View>

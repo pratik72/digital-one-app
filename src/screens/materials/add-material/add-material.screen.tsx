@@ -39,6 +39,8 @@ const mapStateToProps = (state: any) => {
 
 class AddMaterial extends Component<IProps, any> {
 
+  private xhr: any = {};
+
   constructor(props: IProps) {
     super(props);
 
@@ -50,6 +52,16 @@ class AddMaterial extends Component<IProps, any> {
       siteRespond: []
     };
 
+  }
+
+  componentWillUnmount = () => {
+    if (this.xhr.respond && this.xhr.respond.abort) {
+      this.xhr.respond.abort();
+    }
+
+    if (this.xhr.workReportCreated && this.xhr.workReportCreated.abort) {
+      this.xhr.workReportCreated.abort();
+    }
   }
 
   getMaterialFormObject = () => {
@@ -112,11 +124,11 @@ class AddMaterial extends Component<IProps, any> {
   }
 
   allSites = async () => {
-    const respond = await getAllSites();
-    if (respond.data) {
+    this.xhr.respond = await getAllSites();
+    if (this.xhr.respond.data) {
       const sitesOptions: Array<{}> = [];
-      for (let index = 0; index < respond.data.length; index++) {
-        const element = respond.data[index];
+      for (let index = 0; index < this.xhr.respond.data.length; index++) {
+        const element = this.xhr.respond.data[index];
         sitesOptions.push({
           value: element.siteId,
           label: element.siteName,
@@ -126,7 +138,7 @@ class AddMaterial extends Component<IProps, any> {
 
       this.setState({
         allSitesAsOption: sitesOptions,
-        siteRespond: respond.data
+        siteRespond: this.xhr.respond.data
       });
 
     }
@@ -191,9 +203,9 @@ class AddMaterial extends Component<IProps, any> {
       remarks
     };
 
-    const workReportCreated = await (isEdit ? editMaterial({...newMaterialData, metId: this.props.route.params.currentMaterial.metId }) : addNewMaterial(newMaterialData));
+    this.xhr.workReportCreated = await (isEdit ? editMaterial({...newMaterialData, metId: this.props.route.params.currentMaterial.metId }) : addNewMaterial(newMaterialData));
 
-    if (workReportCreated && workReportCreated.data) {
+    if (this.xhr.workReportCreated && this.xhr.workReportCreated.data) {
       this.props.navigation.goBack()
         this.props.route.params.refreshData();
         if(isEdit && this.props.route.params.setMaterialDetails){

@@ -14,6 +14,8 @@ import styles from './work-report.style';
 
 export class WorkReportScreen extends Component<any, any> {
 
+  private xhr: any = {};
+
   constructor(props: any) {
     super(props);
     this.state = {
@@ -27,12 +29,18 @@ export class WorkReportScreen extends Component<any, any> {
     this.allSites();
   }
 
+  componentWillUnmount = () => {
+    if (this.xhr.respond && this.xhr.respond.abort) {
+      this.xhr.respond.abort();
+    }
+  }
+
   allSites = async () => {
-    const respond = await getAllSites();
-    if (respond.data) {
+    this.xhr.respond = await getAllSites();
+    if (this.xhr.respond.data) {
       const sitesOptions: Array<{}> = [];
-      for (let index = 0; index < respond.data.length; index++) {
-        const element = respond.data[index];
+      for (let index = 0; index < this.xhr.respond.data.length; index++) {
+        const element = this.xhr.respond.data[index];
         sitesOptions.push({
           value: element.siteId,
           label: element.siteName,

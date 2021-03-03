@@ -12,6 +12,10 @@ const styles = StyleSheet.create({
     },
     btnStyle: {
         marginHorizontal: 5
+    },
+    scrollWrapper: {
+        flex: 1,
+        marginHorizontal: 15
     }
 });
 

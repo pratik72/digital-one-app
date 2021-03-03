@@ -36,6 +36,8 @@ const mapStateToProps = (state: any) => {
 
 class AddWorkReport extends Component<IProps, any> {
 
+  private xhr: any = {};
+
   constructor(props: IProps) {
     super(props);
 
@@ -49,7 +51,8 @@ class AddWorkReport extends Component<IProps, any> {
       workId: "",
       workTypeObject: {
         label: "",
-        value: ""
+        value: "",
+        id: ""
       }
     }
     const workReportFormsObj: IWorkReportTypes = this.getWorkReportFormObject(WorkDetailTypes);
@@ -75,6 +78,7 @@ class AddWorkReport extends Component<IProps, any> {
         element.workTypeObject = {
           label: element.workType,
           value: element.workId,
+          id: element.workId
         }
 
       }
@@ -85,6 +89,7 @@ class AddWorkReport extends Component<IProps, any> {
         siteObject: {
           value: this.props.route.params.currentWorkReport.siteId,
           label: this.props.route.params.currentWorkReport.siteName,
+          id: this.props.route.params.currentWorkReport.siteId
         },
         siteId: this.props.route.params.currentWorkReport.siteId,
         supervisorId: this.props.route.params.currentWorkReport.supervisorId,
@@ -106,11 +111,11 @@ class AddWorkReport extends Component<IProps, any> {
   }
 
   allSites = async () => {
-    const respond = await getAllSites();
-    if (respond.data) {
+    this.xhr.allSiteRespond = await getAllSites();
+    if (this.xhr.allSiteRespond.data) {
       const sitesOptions: Array<{}> = [];
-      for (let index = 0; index < respond.data.length; index++) {
-        const element = respond.data[index];
+      for (let index = 0; index < this.xhr.allSiteRespond.data.length; index++) {
+        const element = this.xhr.allSiteRespond.data[index];
         sitesOptions.push({
           value: element.siteId,
           label: element.siteName,
@@ -120,7 +125,7 @@ class AddWorkReport extends Component<IProps, any> {
 
       this.setState({
         allSitesAsOption: sitesOptions,
-        siteRespond: respond.data
+        siteRespond: this.xhr.allSiteRespond.data
       });
 
       if (this.props.route.params.currentWorkReport && this.props.route.params.currentWorkReport._id) {
@@ -136,6 +141,21 @@ class AddWorkReport extends Component<IProps, any> {
         title: "Edit Work Report"
       })
     }
+  }
+
+  componentWillUnmount = () => {
+    if (this.xhr.respond && this.xhr.respond.abort) {
+      this.xhr.respond.abort();
+    }
+
+    if (this.xhr.workReportCreated && this.xhr.workReportCreated.abort) {
+      this.xhr.workReportCreated.abort();
+    }
+
+    if (this.xhr.allSiteRespond && this.xhr.allSiteRespond.abort) {
+      this.xhr.allSiteRespond.abort();
+    }
+
   }
 
   setFocusOnNextField = (refKey: string) => {
@@ -156,11 +176,11 @@ class AddWorkReport extends Component<IProps, any> {
   };
 
   fetchSiteSetting = async (siteObj: any) => {
-    var respond = await getSiteSettings({ siteId: siteObj.value, userId: this.props.user.user_id });
-    if (respond.data && respond.data.workCategories) {
+    this.xhr.respond = await getSiteSettings({ siteId: siteObj.value, userId: this.props.user.user_id });
+    if (this.xhr.respond.data && this.xhr.respond.data.workCategories) {
       const newArray = [];
-      for (let index = 0; index < respond.data.workCategories.length; index++) {
-        const element = respond.data.workCategories[index];
+      for (let index = 0; index < this.xhr.respond.data.workCategories.length; index++) {
+        const element = this.xhr.respond.data.workCategories[index];
         newArray.push({
           value: element.workCategoryId,
           label: element.workType,
@@ -193,9 +213,9 @@ class AddWorkReport extends Component<IProps, any> {
       siteName: siteObject.label
     };
 
-    const workReportCreated = await (isEdit ? editWorkReport({...newWorkReportData, _id: this.props.route.params.currentWorkReport._id }) : addNewWorkReport(newWorkReportData));
+    this.xhr.workReportCreated = await (isEdit ? editWorkReport({...newWorkReportData, _id: this.props.route.params.currentWorkReport._id }) : addNewWorkReport(newWorkReportData));
 
-    if (workReportCreated && workReportCreated.data) {
+    if (this.xhr.workReportCreated && this.xhr.workReportCreated.data) {
       this.props.navigation.goBack()
         this.props.route.params.refreshData();
         if(isEdit && this.props.route.params.setWorkReportDetails){

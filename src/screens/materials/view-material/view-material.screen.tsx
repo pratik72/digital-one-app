@@ -1,8 +1,9 @@
 import moment from 'moment';
-import React, { Fragment, useState } from 'react';
+import React, { useState } from 'react';
 import { Text, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import { Button, DataTable } from 'react-native-paper';
+import { Button } from 'react-native-paper';
+import { LabelValueRow } from '../../../components';
 import { COMMON, NAVIGATION } from '../../../constants';
 import styles from './view-material.style';
 
@@ -30,62 +31,21 @@ export const ViewMaterialScreen = (props: any) => {
 
         <View style={{marginBottom: 1, flex: 1}}>
           <ScrollView>
-            <DataTable>
-              <DataTable.Row>
-                <DataTable.Cell>Site</DataTable.Cell>
-                <DataTable.Cell>{currentMaterial.siteName}</DataTable.Cell>
-              </DataTable.Row>
+            <View style={styles.scrollWrapper}>
 
-              <DataTable.Row>
-                <DataTable.Cell>Date</DataTable.Cell>
-                <DataTable.Cell>{moment(currentMaterial.date).format(COMMON.DATE_FORMAT)}</DataTable.Cell>
-              </DataTable.Row>
-
-              <DataTable.Row>
-                <DataTable.Cell>Invoice Number</DataTable.Cell>
-                <DataTable.Cell>{currentMaterial.invoiceNo}</DataTable.Cell>
-              </DataTable.Row>
-
-              <DataTable.Row>
-                <DataTable.Cell>Material Name</DataTable.Cell>
-                <DataTable.Cell>{currentMaterial.materialType}</DataTable.Cell>
-              </DataTable.Row>
-
-              <DataTable.Row>
-                <DataTable.Cell>Unit</DataTable.Cell>
-                <DataTable.Cell>{currentMaterial.materialUnit}</DataTable.Cell>
-              </DataTable.Row>
-
-              <DataTable.Row>
-                <DataTable.Cell>Quantity</DataTable.Cell>
-                <DataTable.Cell>{currentMaterial.materialTotalQuantity}</DataTable.Cell>
-              </DataTable.Row>
-
-              <DataTable.Row>
-                <DataTable.Cell>Per Unit Price</DataTable.Cell>
-                <DataTable.Cell>{currentMaterial.pricePerUnit}</DataTable.Cell>
-              </DataTable.Row>
-
-              <DataTable.Row>
-                <DataTable.Cell>Invoice Price</DataTable.Cell>
-                <DataTable.Cell>{currentMaterial.invoicePrice}</DataTable.Cell>
-              </DataTable.Row>
-
-              <DataTable.Row>
-                <DataTable.Cell>Supplier</DataTable.Cell>
-                <DataTable.Cell>{currentMaterial.supplier}</DataTable.Cell>
-              </DataTable.Row>
-
-              <DataTable.Row>
-                <DataTable.Cell>Remark</DataTable.Cell>
-                <DataTable.Cell>
-                  <View style={{flex: 1}}>
-                    <Text>{`${currentMaterial.remarks || ''}`}</Text>
-                  </View>
-                </DataTable.Cell>
-              </DataTable.Row>
-
-            </DataTable>
+                <LabelValueRow label="Id" value={currentMaterial.metId}/>
+                <LabelValueRow label="Site" value={`${currentMaterial.siteId} - ${currentMaterial.siteName}`}/>
+                <LabelValueRow label="Date" value={moment(currentMaterial.date).format(COMMON.DATE_FORMAT)}/>
+                <LabelValueRow label="Invoice Number" value={currentMaterial.invoiceNo}/>
+                <LabelValueRow label="Material Name" value={currentMaterial.materialType}/>
+                <LabelValueRow label="Unit" value={currentMaterial.materialUnit}/>
+                <LabelValueRow label="Quantity" value={currentMaterial.materialTotalQuantity}/>
+                <LabelValueRow label="Per Unit Price" value={currentMaterial.pricePerUnit}/>
+                <LabelValueRow label="Invoice Price" value={currentMaterial.invoicePrice}/>
+                <LabelValueRow label="Supplier" value={currentMaterial.supplier}/>
+                <LabelValueRow label="Remark" value={currentMaterial.remarks}/>
+               
+            </View>
 
           </ScrollView>
         </View>

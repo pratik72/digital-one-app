@@ -55,6 +55,8 @@ const VIEW_NAMES = {
 
 class SiteSettingScreen extends Component<any, ISiteSettingStates> {
 
+  private xhr: any = {};
+
   constructor(props: any) {
     super(props);
     this.state = {
@@ -77,11 +79,30 @@ class SiteSettingScreen extends Component<any, ISiteSettingStates> {
     this.fetchSiteSetting();
   }
 
+  componentWillUnmount = () => {
+    if (this.xhr.respond && this.xhr.respond.abort) {
+      this.xhr.respond.abort();
+    }
+
+    if (this.xhr.allWorkCatRespond && this.xhr.allWorkCatRespond.abort) {
+      this.xhr.allWorkCatRespond.abort();
+    }
+
+    if (this.xhr.getAllUsersRespond && this.xhr.getAllUsersRespond.abort) {
+      this.xhr.getAllUsersRespond.abort();
+    }
+
+    if (this.xhr.updateData && this.xhr.updateData.abort) {
+      this.xhr.updateData.abort();
+    }
+
+  }
+
   fetchSiteSetting = async () => {
-    var respond = await getSiteSettings({siteId: this.state.currentSite?.siteId, userId: this.props.user.user_id});
-    if (respond.data) {
+    this.xhr.respond = await getSiteSettings({siteId: this.state.currentSite?.siteId, userId: this.props.user.user_id});
+    if (this.xhr.respond.data) {
       this.setState({
-        siteSetting: respond.data
+        siteSetting: this.xhr.respond.data
       });
       this.fetchAllUsers();
       this.fetchAllWorkCategory();
@@ -89,15 +110,15 @@ class SiteSettingScreen extends Component<any, ISiteSettingStates> {
   }
 
   fetchAllWorkCategory = async () => {
-    var respond = await getAllWorkCategory();
-    if (respond.data) {
+    this.xhr.allWorkCatRespond = await getAllWorkCategory();
+    if (this.xhr.allWorkCatRespond.data) {
       const alreadyExistWorkType = this.state.siteSetting.workCategories && this.state.siteSetting.workCategories.map((obj: any)=>{
         return obj.workCategoryId
       });
       const tempWorkCategory = [];
       const selectedWorkType = [];
-      for (let index = 0; index < respond.data.length; index++) {
-        const element = respond.data[index];
+      for (let index = 0; index < this.xhr.allWorkCatRespond.data.length; index++) {
+        const element = this.xhr.allWorkCatRespond.data[index];
         tempWorkCategory.push({
           value: element.workId,
           label: element.WorkTypes,
@@ -117,7 +138,7 @@ class SiteSettingScreen extends Component<any, ISiteSettingStates> {
       }
 
       this.setState({
-        allWorkCategory: respond.data,
+        allWorkCategory: this.xhr.allWorkCatRespond.data,
         allWorkCategoryAsOption: tempWorkCategory,
         workCategoryOpt: selectedWorkType
       });
@@ -125,11 +146,11 @@ class SiteSettingScreen extends Component<any, ISiteSettingStates> {
   }
 
   fetchAllUsers = async () => {
-    var respond = await getAllUsersDetails();
-    if (respond.data) {
+    this.xhr.getAllUsersRespond = await getAllUsersDetails();
+    if (this.xhr.getAllUsersRespond.data) {
       const userOptions: Array<any> = [];
-      for (let index = 0; index < respond.data.length; index++) {
-        const element = respond.data[index];
+      for (let index = 0; index < this.xhr.getAllUsersRespond.data.length; index++) {
+        const element = this.xhr.getAllUsersRespond.data[index];
         userOptions.push({
           value: element.user_id,
           id: element.user_id,
@@ -140,7 +161,7 @@ class SiteSettingScreen extends Component<any, ISiteSettingStates> {
       }
 
       this.setState({
-        allUsersDetails: respond.data,
+        allUsersDetails: this.xhr.getAllUsersRespond.data,
         allUsersAsOption: userOptions
       });
       
@@ -194,8 +215,8 @@ class SiteSettingScreen extends Component<any, ISiteSettingStates> {
       workCategories: this.getDataFromView(VIEW_NAMES.WORK_CATEGORY_VIEW),
     };
     
-    const updateData = await updateSiteSettings({siteId: this.state.currentSite.siteId, body});
-    if(updateData.data){
+    this.xhr.updateData = await updateSiteSettings({siteId: this.state.currentSite.siteId, body});
+    if(this.xhr.updateData.data){
       this.goBack();
     }
   }

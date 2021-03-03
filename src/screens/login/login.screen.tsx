@@ -32,6 +32,8 @@ const loginSchema = Yup.object().shape({
 
 class LoginScreen extends Component<any, ILoginState> {
 
+  private xhr: any = {};
+
   constructor(props: any) {
     super(props);
     this.state = {
@@ -46,16 +48,20 @@ class LoginScreen extends Component<any, ILoginState> {
   }
 
   handleLogin = async (userData: any) => {
-    console.log(userData)
     const { email, password } = userData;
 
-    const submitdata = await login({ email, password });
-    console.log(submitdata);
-    if(submitdata && submitdata.data){
-      this.props.setUser(submitdata.data);
+    this.xhr.submitdata = await login({ email, password });
+    if (this.xhr.submitdata && this.xhr.submitdata.data) {
+      this.props.setUser(this.xhr.submitdata.data);
       this.loadHomeScreen();
     }
   };
+
+  componentWillUnmount = () => {
+    if (this.xhr.submitdata && this.xhr.submitdata.abort) {
+      this.xhr.submitdata.abort();
+    }
+  }
 
   loadHomeScreen = () => {
     this.props.navigation.reset({
@@ -97,17 +103,17 @@ class LoginScreen extends Component<any, ILoginState> {
                               label="Email"
                               value={props.values.email}
                               onChangeText={props.handleChange('email')}
-                              onSubmitEditing={()=>{this.passwordRef.focus()}}
+                              onSubmitEditing={() => { this.passwordRef.focus() }}
                               returnKeyType='next'
                               autoCapitalize='none'
                             />
                             <Text>{props.touched.email && props.errors.email}</Text>
                           </View>
 
-                          <View style={{marginTop: 10}}>
+                          <View style={{ marginTop: 10 }}>
                             <TextInput
                               label="Password"
-                              ref={(ref)=>{this.passwordRef = ref}}
+                              ref={(ref) => { this.passwordRef = ref }}
                               secureTextEntry={!this.state.showPassword}
                               value={props.values.password}
                               onChangeText={props.handleChange('password')}
@@ -115,31 +121,31 @@ class LoginScreen extends Component<any, ILoginState> {
                               returnKeyType='done'
                               right={
                                 <TextInput.Icon
-                                      name={this.state.showPassword ? 'eye-off': 'eye'}
-                                      onPress={this.togglePassword}
-                                    />
-                                  
+                                  name={this.state.showPassword ? 'eye-off' : 'eye'}
+                                  onPress={this.togglePassword}
+                                />
+
                               }
                             />
                             <Text>{props.touched.password && props.errors.password}</Text>
                           </View>
 
-                          <View style={{marginTop: 10}}>
+                          <View style={{ marginTop: 10 }}>
                             <Button mode="contained" onPress={props.handleSubmit} uppercase={false}>
-                              <Text style={{fontSize: 16}}>{'Login'}</Text>
+                              <Text style={{ fontSize: 16 }}>{'Login'}</Text>
                             </Button>
                           </View>
 
                         </View>
-                        
+
 
                       </ScrollView>
-                      
+
                     </View>
                   );
                 }}
               </Formik>
-          </View>
+            </View>
           </View>
         </KeyboardAvoidingView>
 
@@ -155,7 +161,7 @@ const mapStateToProps = (state: any) => {
   };
 };
 
-const mapDispatchToProps ={
+const mapDispatchToProps = {
   setUser: setUser
 }
 
