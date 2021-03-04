@@ -1,6 +1,7 @@
 import { Formik } from 'formik';
 import React, { Component, ElementRef } from 'react';
 import {
+  Alert,
   GestureResponderEvent,
   KeyboardAvoidingView,
   ScrollView,
@@ -52,8 +53,12 @@ class LoginScreen extends Component<any, ILoginState> {
 
     this.xhr.submitdata = await login({ email, password });
     if (this.xhr.submitdata && this.xhr.submitdata.data) {
-      this.props.setUser(this.xhr.submitdata.data);
-      this.loadHomeScreen();
+      if(this.xhr.submitdata.data.token){
+        this.props.setUser(this.xhr.submitdata.data);
+        this.loadHomeScreen();
+      }else{
+        Alert.alert("ERROR",this.xhr.submitdata.data.message);
+      }
     }
   };
 

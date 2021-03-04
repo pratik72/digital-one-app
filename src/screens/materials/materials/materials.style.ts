@@ -8,6 +8,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-around",
         marginTop: 10,
+        marginRight: 5
 
     }
 });

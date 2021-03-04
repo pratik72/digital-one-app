@@ -67,7 +67,6 @@ export const post = (
   { url, headers, body }: IRequestParams,
   callback?: () => void
 ) => {
-  console.log('URL', ServerEndPoint + url)
   return axios({
     method: "POST",
     url: ServerEndPoint + url,

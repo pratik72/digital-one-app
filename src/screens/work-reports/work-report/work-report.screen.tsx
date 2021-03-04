@@ -73,9 +73,11 @@ export class WorkReportScreen extends Component<any, any> {
           <View style={{flex:1, paddingHorizontal: 10 }}>
             <MultiSelect value={this.state.currentSite} items={this.state.allSitesAsOption} onChange={(val: any) => { this.setState({'currentSite': val}, this.refreshData); }} label="Site" />
           </View>
-          <Button mode="outlined" uppercase={false} onPress={this.openAddSite}>
-            <Text style={{fontSize: 16}}>{'Add Work Report'}</Text>
-          </Button>
+          <View>
+            <Button mode="outlined" uppercase={false} onPress={this.openAddSite}>
+              <Text style={{fontSize: 16}}>{'Add Work Report'}</Text>
+            </Button>
+          </View>
 
         </View>
 

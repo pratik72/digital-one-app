@@ -48,7 +48,7 @@ class AddWorkReport extends Component<IProps, any> {
       },
       workDescription: "",
       workType: "",
-      workId: "",
+      workCategoryId: "",
       workTypeObject: {
         label: "",
         value: "",
@@ -213,13 +213,13 @@ class AddWorkReport extends Component<IProps, any> {
       siteName: siteObject.label
     };
 
-    this.xhr.workReportCreated = await (isEdit ? editWorkReport({...newWorkReportData, _id: this.props.route.params.currentWorkReport._id }) : addNewWorkReport(newWorkReportData));
+    this.xhr.workReportCreated = await (isEdit ? editWorkReport({...newWorkReportData, _id: this.props.route.params.currentWorkReport._id, workId: this.props.route.params.currentWorkReport.workId }) : addNewWorkReport(newWorkReportData));
 
     if (this.xhr.workReportCreated && this.xhr.workReportCreated.data) {
       this.props.navigation.goBack()
         this.props.route.params.refreshData();
         if(isEdit && this.props.route.params.setWorkReportDetails){
-          this.props.route.params.setWorkReportDetails({...newWorkReportData, _id: this.props.route.params.currentWorkReport._id });
+          this.props.route.params.setWorkReportDetails({...newWorkReportData, _id: this.props.route.params.currentWorkReport._id, workId: this.props.route.params.currentWorkReport.workId });
         }
     }
   }
@@ -276,7 +276,7 @@ class AddWorkReport extends Component<IProps, any> {
                                   </TouchableOpacity>
                                 </View>
                                 <View style={styles.fieldView}>
-                                  <MultiSelect value={workDetails.workTypeObject} name={`Works[${idx}].workTypeObject`} items={this.state.allWorkTypeOption} onChange={(val: any) => { props.setFieldValue(`Works[${idx}].workTypeObject`, val); props.setFieldValue(`Works[${idx}].workId`, val.value); props.setFieldValue(`Works[${idx}].workType`, val.label); }} label="Work Type" disabled={!props.values.siteObject?.value} />
+                                  <MultiSelect value={workDetails.workTypeObject} name={`Works[${idx}].workTypeObject`} items={this.state.allWorkTypeOption} onChange={(val: any) => { props.setFieldValue(`Works[${idx}].workTypeObject`, val); props.setFieldValue(`Works[${idx}].workCategoryId`, val.value); props.setFieldValue(`Works[${idx}].workType`, val.label); }} label="Work Type" disabled={!props.values.siteObject?.value} />
                                 </View>
                                 <View style={styles.fieldView}>
                                   <TextInput

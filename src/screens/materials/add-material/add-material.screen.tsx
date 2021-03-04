@@ -203,13 +203,13 @@ class AddMaterial extends Component<IProps, any> {
       remarks
     };
 
-    this.xhr.workReportCreated = await (isEdit ? editMaterial({...newMaterialData, metId: this.props.route.params.currentMaterial.metId }) : addNewMaterial(newMaterialData));
+    this.xhr.workReportCreated = await (isEdit ? editMaterial({...newMaterialData, metId: this.props.route.params.currentMaterial.metId, _id: this.props.route.params.currentMaterial._id }) : addNewMaterial(newMaterialData));
 
     if (this.xhr.workReportCreated && this.xhr.workReportCreated.data) {
       this.props.navigation.goBack()
         this.props.route.params.refreshData();
         if(isEdit && this.props.route.params.setMaterialDetails){
-          this.props.route.params.setMaterialDetails({...newMaterialData, _id: this.props.route.params.currentMaterial._id });
+          this.props.route.params.setMaterialDetails({...newMaterialData, _id: this.props.route.params.currentMaterial._id, metId: this.props.route.params.currentMaterial.metId });
         }
     }
   }

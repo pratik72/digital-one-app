@@ -16,4 +16,5 @@ export interface IMaterial {
   siteObject?: IDropdownObject;
   remarks : String;
   supplier : String;
+  _id? : String;
 }
