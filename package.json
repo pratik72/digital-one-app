@@ -5,6 +5,7 @@
   "scripts": {
     "android-dev": "SET ENVFILE=.env.development && react-native run-android",
     "android-prod": "SET ENVFILE=.env.production && react-native run-android",
+    "android-signed-prod": "SET ENVFILE=.env.production && react-native run-android --variant=release",
     "build-apk-release-dev": "cd android && SET ENVFILE=.env.development && gradlew assembleRelease",
     "build-apk-release-prod": "cd android && SET ENVFILE=.env.production && gradlew assembleRelease",
     "ios": "react-native run-ios",
