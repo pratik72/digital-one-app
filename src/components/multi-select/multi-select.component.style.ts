@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
     borderColor: '#CEDCCE'
   },
   listText: {
-    color: '#2684FF', fontSize: 16, fontWeight: 'bold'
+    color: Colors.lightBlue700, fontSize: 16, fontWeight: 'bold'
   },
   disabledText: {
     color: '#00000042'

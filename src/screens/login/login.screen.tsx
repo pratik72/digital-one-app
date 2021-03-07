@@ -88,8 +88,8 @@ class LoginScreen extends Component<any, ILoginState> {
 
         <KeyboardAvoidingView behavior="padding" style={styles.container1}>
           <View style={styles.loginView}>
-            <View>
-              <Title style={{ color: '#00dddd', fontSize: 30 }}>{'Login'}</Title>
+            <View style={{marginBottom: 30}}>
+              <Title style={{ color: Colors.deepPurpleA700, fontSize: 30, paddingLeft: 50 }}>{'Digital Site'}</Title>
             </View>
             <View>
               <Formik

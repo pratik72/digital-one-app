@@ -4,13 +4,19 @@ import {
   View
 } from 'react-native';
 import { Button } from 'react-native-paper';
+import { connect } from 'react-redux';
 import { SitesListing } from '../../../components/listing/sites-listing/sites-listing.component';
-import { NAVIGATION } from '../../../constants';
+import { COMMON, NAVIGATION } from '../../../constants';
 
 import styles from './site.style';
 
+const mapStateToProps = (state: any) => {
+  return {
+    user: state.user
+  };
+};
 
-export class SiteScreen extends Component<any, any> {
+class SiteScreen extends Component<any, any> {
 
   constructor(props: any) {
     super(props);
@@ -38,17 +44,20 @@ export class SiteScreen extends Component<any, any> {
   }
 
   render() {
+    const {userType} = this.props.user;
     return (
       <View style={styles.container}>
-        <View style={styles.btnContainer}>
-          <Button mode="outlined" uppercase={false} onPress={this.openAddSite}>
-            <Text style={{fontSize: 16}}>{'Add Site'}</Text>
-          </Button>
+        {userType == COMMON.SUPER_USER && 
+          <View style={styles.btnContainer}>
+            <Button mode="outlined" uppercase={false} onPress={this.openAddSite}>
+              <Text style={{fontSize: 16}}>{'Add Site'}</Text>
+            </Button>
 
-          <Button mode="outlined" uppercase={false} onPress={this.openWorkCategory}>
-            <Text style={{fontSize: 16}}>{'Manage Category'}</Text>
-          </Button>
-        </View>
+            <Button mode="outlined" uppercase={false} onPress={this.openWorkCategory}>
+              <Text style={{fontSize: 16}}>{'Manage Category'}</Text>
+            </Button>
+          </View>
+        }
 
         <SitesListing {...this.props} refreshFlag={this.state.refreshFlag} refreshSiteData={this.refreshSiteData} />
 
@@ -56,3 +65,5 @@ export class SiteScreen extends Component<any, any> {
     );
   }
 }
+
+export default connect(mapStateToProps, {})(SiteScreen);

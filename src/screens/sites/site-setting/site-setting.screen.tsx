@@ -103,9 +103,10 @@ class SiteSettingScreen extends Component<any, ISiteSettingStates> {
     if (this.xhr.respond.data) {
       this.setState({
         siteSetting: this.xhr.respond.data
+      }, ()=>{
+        this.fetchAllUsers();
+        this.fetchAllWorkCategory();
       });
-      this.fetchAllUsers();
-      this.fetchAllWorkCategory();
     }
   }
 

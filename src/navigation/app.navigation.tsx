@@ -3,12 +3,12 @@ import { createDrawerNavigator, DrawerContentScrollView, DrawerItem, DrawerItemL
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
-import { SiteScreen } from '../screens/sites/site/site.screen';
+import SiteScreen from '../screens/sites/site/site.screen';
 import { WorkReportScreen } from '../screens/work-reports/work-report/work-report.screen';
 import { HeaderComponent } from '../components';
 import LoginScreen from '../screens/login/login.screen';
 import {store} from "../reducers/store";
-import { Alert } from 'react-native';
+import { Alert, Text, View } from 'react-native';
 import { logout } from '../services';
 import { setUser } from '../reducers/actions';
 import { ViewSiteScreen } from '../screens/sites/view-site/view-site.screen';
@@ -98,9 +98,21 @@ const materialsNavigator = () => {
   );
 }
 
+const DrawerUserInfo = () => {
+  const user = store && store.getState().user;
+  return (
+    <View style={{marginHorizontal: 10, marginVertical: 20, paddingLeft: 5}}>
+        <Text style={{fontSize: 16, fontWeight: 'bold'}}>{`${user.firstName} ${user.lastName}`}</Text>
+        <Text style={{fontSize: 12}}>{user.organization.orgName}</Text>
+      </View>
+  );
+}
+
 const LogoutDrawerContent = (props: any) => {
+  
   return (
     <DrawerContentScrollView {...props}>
+      <DrawerUserInfo />
       <DrawerItemList {...props} />
       <DrawerItem label="Logout" onPress={async () => {
         console.log(props)
