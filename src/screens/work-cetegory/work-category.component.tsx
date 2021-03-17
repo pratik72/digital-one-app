@@ -5,6 +5,7 @@ import { Alert, FlatList, Text, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { Button, DataTable, Divider, HelperText, List, TextInput } from "react-native-paper";
 import * as Yup from 'yup';
+import { Loader } from "../../components";
 import { addWorkCategory, editWorkCategory, getAllWorkCategory } from "../../services";
 import styles from './work-category.style';
 
@@ -17,6 +18,8 @@ interface IState {
   newWorkCategory: string;
   allCategory: Array<IWorkCategory>;
   editCategory: IWorkCategory;
+  xhrLoader: boolean;
+  refreshFlag: boolean;
 }
 
 const categorySchema = Yup.object().shape({
@@ -33,7 +36,9 @@ export class WorkCategory extends React.PureComponent<any, IState> {
     this.state = {
       newWorkCategory: "",
       allCategory: [] as Array<IWorkCategory>,
-      editCategory: {} as IWorkCategory
+      editCategory: {} as IWorkCategory,
+      xhrLoader: false,
+      refreshFlag: false
     };
   }
 
@@ -52,29 +57,48 @@ export class WorkCategory extends React.PureComponent<any, IState> {
 
   }
 
-  fetchAllWorkCategory = async () => {
-    this.xhr.respond = await getAllWorkCategory();
-    if (this.xhr.respond.data) {
-      this.setState({
-        allCategory: this.xhr.respond.data
-      });
-    }
+  fetchAllWorkCategory = () => {
+    this.setState({
+      refreshFlag: true
+    }, async () => {
+      this.xhr.respond = await getAllWorkCategory();
+      if (this.xhr.respond.data) {
+        this.setState({
+          allCategory: this.xhr.respond.data,
+          refreshFlag: false
+        });
+      }else{
+        this.setState({
+          refreshFlag: false
+        });
+      }
+    });
   }
 
-  saveData = async (formData: FormikValues) => {
+  saveData =  (formData: FormikValues, formikObj: any) => {
+    console.log(formikObj);
     const { newWorkCategory } = formData;
     const { editCategory } = this.state;
     if (newWorkCategory) {
       const body = { WorkTypes: newWorkCategory }
-      this.xhr.addWorkCatRespond = await (editCategory?.workId ? editWorkCategory({ body, workId: editCategory.workId }) : addWorkCategory(body));
-      if (this.xhr.addWorkCatRespond && this.xhr.addWorkCatRespond.data) {
-        Alert.alert("Success", this.xhr.addWorkCatRespond.data.message);
-        this.setState({
-          newWorkCategory: "",
-          editCategory: {} as IWorkCategory
-        });
-        this.fetchAllWorkCategory();
-      }
+      this.setState({
+        xhrLoader: true
+      }, async () => {
+        this.xhr.addWorkCatRespond = await (editCategory?.workId ? editWorkCategory({ body, workId: editCategory.workId }) : addWorkCategory(body));
+        if (this.xhr.addWorkCatRespond && this.xhr.addWorkCatRespond.data) {
+          //Alert.alert("Success", this.xhr.addWorkCatRespond.data.message);
+          formikObj && formikObj.resetForm && formikObj.resetForm();
+          this.setState({
+            newWorkCategory: "",
+            editCategory: {} as IWorkCategory,
+            xhrLoader: false
+          },this.fetchAllWorkCategory);
+        }else{
+          this.setState({
+            xhrLoader: false
+          });
+        }
+      });
     } else {
       Alert.alert("Validation", "Please add text in field.");
     }
@@ -143,9 +167,11 @@ export class WorkCategory extends React.PureComponent<any, IState> {
 
 
                     <View>
-                      <Button mode="contained" onPress={props.handleSubmit} uppercase={false}>
+                      {!this.state.xhrLoader && <Button mode="contained" onPress={props.handleSubmit} uppercase={false}>
                         <Text style={{ fontSize: 16 }}>{'Add'}</Text>
-                      </Button>
+                      </Button>}
+
+                      {this.state.xhrLoader && <Loader />}
                     </View>
 
                   </View>
@@ -163,7 +189,7 @@ export class WorkCategory extends React.PureComponent<any, IState> {
             data={allCategory}
             keyExtractor={(item: any) => item.workId}
             renderItem={this._renderItem}
-            refreshing={false}
+            refreshing={this.state.refreshFlag}
             onRefresh={this.fetchAllWorkCategory}
           />
         </View>

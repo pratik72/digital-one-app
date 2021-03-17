@@ -1,6 +1,6 @@
 import { Formik, FormikValues } from 'formik';
 import moment from 'moment';
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import {
   ScrollView,
     Text,
@@ -9,7 +9,7 @@ import {
 import { Button, HelperText, TextInput } from 'react-native-paper';
 import { connect } from 'react-redux';
 import * as Yup from 'yup';
-import { DateTimePickerComponent, MultiSelect } from '../../../components';
+import { DateTimePickerComponent, Loader, MultiSelect } from '../../../components';
 import { addNewSite, editSite, getAllUsersDetails, getAllWorkCategory, getSiteSettings, updateSiteSettings } from '../../../services';
 import { ISiteRules, SiteType } from '../../../typings';
 
@@ -32,18 +32,19 @@ const mapStateToProps = (state: any) => {
 };
 
 interface ISiteSettingStates {
-  siteSetting: ISiteRules,
-  currentSite: any,
-  allWorkCategory: Array<any>,
-  allWorkCategoryAsOption: Array<any>,
+  siteSetting: ISiteRules;
+  loadSettings: boolean;
+  currentSite: any;
+  allWorkCategory: Array<any>;
+  allWorkCategoryAsOption: Array<any>;
 
-  allUsersDetails: Array<any>,
-  allUsersAsOption: Array<any>,
+  allUsersDetails: Array<any>;
+  allUsersAsOption: Array<any>;
 
-  adminUsersOpt: Array<any>,
-  supervisorsOpt: Array<any>,
-  userExpenseOpt: Array<any>,
-  workCategoryOpt: Array<any>,
+  adminUsersOpt: Array<any>;
+  supervisorsOpt: Array<any>;
+  userExpenseOpt: Array<any>;
+  workCategoryOpt: Array<any>;
 }
 
 const VIEW_NAMES = {
@@ -61,6 +62,7 @@ class SiteSettingScreen extends Component<any, ISiteSettingStates> {
     super(props);
     this.state = {
       siteSetting: {} as ISiteRules,
+      loadSettings: false,
       currentSite: this.props.route.params.siteDetails || {},
       allWorkCategory: [],
       allWorkCategoryAsOption: [],
@@ -98,16 +100,23 @@ class SiteSettingScreen extends Component<any, ISiteSettingStates> {
 
   }
 
-  fetchSiteSetting = async () => {
-    this.xhr.respond = await getSiteSettings({siteId: this.state.currentSite?.siteId, userId: this.props.user.user_id});
-    if (this.xhr.respond.data) {
+  fetchSiteSetting =  () => {
+    this.setState({
+      loadSettings: true
+    }, async () => {
+      this.xhr.respond = await getSiteSettings({siteId: this.state.currentSite?.siteId, userId: this.props.user.user_id});
+      if (this.xhr.respond.data) {
+        this.setState({
+          siteSetting: this.xhr.respond.data
+        }, ()=>{
+          this.fetchAllUsers();
+          this.fetchAllWorkCategory();
+        });
+      }
       this.setState({
-        siteSetting: this.xhr.respond.data
-      }, ()=>{
-        this.fetchAllUsers();
-        this.fetchAllWorkCategory();
+        loadSettings: false
       });
-    }
+    });
   }
 
   fetchAllWorkCategory = async () => {
@@ -298,41 +307,47 @@ class SiteSettingScreen extends Component<any, ISiteSettingStates> {
   };
 
   render() {
-    const {allUsersAsOption, adminUsersOpt} = this.state;
+    const {allUsersAsOption, adminUsersOpt, loadSettings} = this.state;
     return (
       <View style={styles.container}>
-        <View style={{flex: 1}}>
-          <ScrollView>
-            
-            <View style={styles.btnContainer}>
-              <Text style={styles.labelText}>Admin Users</Text>
-              <MultiSelect values={this.state.adminUsersOpt} items={this.state.allUsersAsOption} onChange={(data: any)=>this.handleChangeData(data, 'adminUsersOpt')} multiple={true} />
-            </View>
+        {loadSettings && <View style={{marginTop: 30}}>
+          <Loader />
+        </View>}
+        
+        {!loadSettings && <Fragment>
+          <View style={{flex: 1}}>
+            <ScrollView>
+              
+              <View style={styles.btnContainer}>
+                <Text style={styles.labelText}>Admin Users</Text>
+                <MultiSelect values={this.state.adminUsersOpt} items={this.state.allUsersAsOption} onChange={(data: any)=>this.handleChangeData(data, 'adminUsersOpt')} multiple={true} />
+              </View>
 
-            <View style={styles.btnContainer}>
-              <Text style={styles.labelText}>Supervisors</Text>
-              <MultiSelect values={this.state.supervisorsOpt} items={this.state.allUsersAsOption} onChange={(data: any)=>this.handleChangeData(data, 'supervisorsOpt')} multiple={true}/>
-            </View>
+              <View style={styles.btnContainer}>
+                <Text style={styles.labelText}>Supervisors</Text>
+                <MultiSelect values={this.state.supervisorsOpt} items={this.state.allUsersAsOption} onChange={(data: any)=>this.handleChangeData(data, 'supervisorsOpt')} multiple={true}/>
+              </View>
 
-            <View style={styles.btnContainer}>
-              <Text style={styles.labelText}>Expense Users</Text>
-              <MultiSelect values={this.state.userExpenseOpt} items={this.state.allUsersAsOption} onChange={(data: any)=>this.handleChangeData(data, 'userExpenseOpt')} multiple={true}/>
-            </View>
+              <View style={styles.btnContainer}>
+                <Text style={styles.labelText}>Expense Users</Text>
+                <MultiSelect values={this.state.userExpenseOpt} items={this.state.allUsersAsOption} onChange={(data: any)=>this.handleChangeData(data, 'userExpenseOpt')} multiple={true}/>
+              </View>
 
-            <View style={styles.btnContainer}>
-              <Text style={styles.labelText}>Site Category</Text>
-              <MultiSelect values={this.state.workCategoryOpt} items={this.state.allWorkCategoryAsOption} onChange={(data: any)=>this.handleChangeData(data, 'workCategoryOpt')} multiple={true}/>
-            </View>
-          </ScrollView>
-        </View>
-        <View style={{ flexDirection: 'row', margin: 5}}>
-          <Button mode="contained" onPress={this.handleSubmit} uppercase={false} style={styles.btn}>
-            <Text style={{fontSize: 16}}>{'Save'}</Text>
-          </Button>
-          <Button mode="outlined" onPress={this.goBack} uppercase={false} style={styles.btn}>
-            <Text style={{fontSize: 16}}>{'Cancel'}</Text>
-          </Button>
-        </View>
+              <View style={styles.btnContainer}>
+                <Text style={styles.labelText}>Site Category</Text>
+                <MultiSelect values={this.state.workCategoryOpt} items={this.state.allWorkCategoryAsOption} onChange={(data: any)=>this.handleChangeData(data, 'workCategoryOpt')} multiple={true}/>
+              </View>
+            </ScrollView>
+          </View>
+          <View style={{ flexDirection: 'row', margin: 5}}>
+            <Button mode="contained" onPress={this.handleSubmit} uppercase={false} style={styles.btn}>
+              <Text style={{fontSize: 16}}>{'Save'}</Text>
+            </Button>
+            <Button mode="outlined" onPress={this.goBack} uppercase={false} style={styles.btn}>
+              <Text style={{fontSize: 16}}>{'Cancel'}</Text>
+            </Button>
+          </View>
+        </Fragment>}
 
       </View>
     );

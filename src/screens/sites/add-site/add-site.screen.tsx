@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import { Button, HelperText, TextInput } from 'react-native-paper';
 import * as Yup from 'yup';
-import { DateTimePickerComponent } from '../../../components';
+import { DateTimePickerComponent, Loader } from '../../../components';
 import { addNewSite, editSite } from '../../../services';
 import { SiteType } from '../../../typings';
 
@@ -65,6 +65,9 @@ export class AddSiteScreen extends Component<any, any> {
 
   constructor(props: any) {
     super(props);
+    this.state={
+      xhrLoader: false
+    }
   }
 
   componentDidMount = () => {
@@ -96,16 +99,25 @@ export class AddSiteScreen extends Component<any, any> {
       tentativeDeadline
     };
 
-    this.xhr.siteCreated = await ( isEditSite ? editSite({...newSiteData, siteId: siteDetails.siteId }) : addNewSite(newSiteData));;
-    if (this.xhr.siteCreated && this.xhr.siteCreated.data) {
-      if(this.props.route.params && this.props.route.params.refreshSiteData){
-        this.props.navigation.goBack()
-        this.props.route.params.refreshSiteData();
-        if(isEditSite && this.props.route.params.setSiteDetails){
-          this.props.route.params.setSiteDetails({...newSiteData, siteId: siteDetails.siteId });
+    this.setState({
+      xhrLoader: true
+    }, async ()=>{
+      this.xhr.siteCreated = await ( isEditSite ? editSite({...newSiteData, siteId: siteDetails.siteId }) : addNewSite(newSiteData));;
+      if (this.xhr.siteCreated && this.xhr.siteCreated.data) {
+        if(this.props.route.params && this.props.route.params.refreshSiteData){
+          this.props.navigation.goBack()
+          this.props.route.params.refreshSiteData();
+          if(isEditSite && this.props.route.params.setSiteDetails){
+            this.props.route.params.setSiteDetails({...newSiteData, siteId: siteDetails.siteId });
+          }
         }
+      }else{
+        this.setState({
+          xhrLoader: false
+        });
       }
-    }
+    });
+
   }
 
   setFocusOnNextField = (refKey: string) => {
@@ -258,14 +270,16 @@ export class AddSiteScreen extends Component<any, any> {
                             <DateTimePickerComponent label="Deadline" values={props.values.tentativeDeadline} onChange={(date:Date) => props.setFieldValue('tentativeDeadline', date)}/>
                           </View>
 
-                          <View style={styles.btnView}>
+                          {!this.state.xhrLoader && <View style={styles.btnView}>
                             <Button mode="contained" onPress={props.handleSubmit} uppercase={false} style={styles.btn}>
                               <Text style={{fontSize: 16}}>{'Save'}</Text>
                             </Button>
                             <Button mode="contained" onPress={this.goBack} uppercase={false} style={styles.btn}>
                               <Text style={{fontSize: 16}}>{'Cancel'}</Text>
                             </Button>
-                          </View>
+                          </View>}
+
+                          {this.state.xhrLoader && <Loader />}
 
                         </View>
                         

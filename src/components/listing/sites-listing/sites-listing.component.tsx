@@ -12,12 +12,15 @@ import { EmptyListItem } from "../..";
 export const SitesListing = (props: any) => {
 
   const [listData, setListData] = useState([] as Array<SiteType>);
+  const [refreshFlag, setRefreshFlag] = useState(false);
 
   const allSites = async () => {
+    setRefreshFlag(true);
     const allSitesRespond = await getAllSites();
     if (allSitesRespond && allSitesRespond.data) {
       setListData(allSitesRespond.data);
     }
+    setRefreshFlag(false);
   }
 
   useEffect(() => {
@@ -55,7 +58,7 @@ export const SitesListing = (props: any) => {
           data={listData}
           keyExtractor={(item: any) => item.siteId}
           renderItem={_renderItem}
-          refreshing={false}
+          refreshing={refreshFlag}
           onRefresh={allSites}
           ListEmptyComponent={EmptyListItem}
         />

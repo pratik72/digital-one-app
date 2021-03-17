@@ -17,9 +17,11 @@ import { login } from '../../services';
 import { setUser } from '../../reducers/actions';
 import { connect } from 'react-redux';
 import { NAVIGATION } from '../../constants';
+import { Loader } from '../../components';
 
 interface ILoginState {
   showPassword: boolean;
+  loginLoader: boolean;
 }
 
 const loginSchema = Yup.object().shape({
@@ -39,6 +41,7 @@ class LoginScreen extends Component<any, ILoginState> {
     super(props);
     this.state = {
       showPassword: false,
+      loginLoader: false
     };
   }
 
@@ -48,18 +51,26 @@ class LoginScreen extends Component<any, ILoginState> {
     this.props.user && this.props.user.token && this.loadHomeScreen();
   }
 
-  handleLogin = async (userData: any) => {
+  handleLogin =  (userData: any) => {
     const { email, password } = userData;
+    this.setState({
+      loginLoader: true
+    }, async ()=>{
 
-    this.xhr.submitdata = await login({ email, password });
-    if (this.xhr.submitdata && this.xhr.submitdata.data) {
-      if(this.xhr.submitdata.data.token){
-        this.props.setUser(this.xhr.submitdata.data);
-        this.loadHomeScreen();
-      }else{
-        Alert.alert("ERROR",this.xhr.submitdata.data.message);
+      this.xhr.submitdata = await login({ email, password });
+      if (this.xhr.submitdata && this.xhr.submitdata.data) {
+        if(this.xhr.submitdata.data.token){
+          this.props.setUser(this.xhr.submitdata.data);
+          this.loadHomeScreen();
+        }else{
+          Alert.alert("ERROR",this.xhr.submitdata.data.message);
+          this.setState({
+            loginLoader: false
+          })
+        }
       }
-    }
+    });
+
   };
 
   componentWillUnmount = () => {
@@ -83,6 +94,7 @@ class LoginScreen extends Component<any, ILoginState> {
   }
 
   render() {
+    const { loginLoader } = this.state;
     return (
       <View style={styles.container}>
 
@@ -136,9 +148,10 @@ class LoginScreen extends Component<any, ILoginState> {
                           </View>
 
                           <View style={{ marginTop: 10 }}>
-                            <Button mode="contained" onPress={props.handleSubmit} uppercase={false}>
+                            {!loginLoader && <Button mode="contained" onPress={props.handleSubmit} uppercase={false}>
                               <Text style={{ fontSize: 16 }}>{'Login'}</Text>
-                            </Button>
+                            </Button>}
+                            {loginLoader && <Loader />}
                           </View>
 
                         </View>
