@@ -1,29 +1,17 @@
-import { Formik, FormikValues } from 'formik';
-import moment from 'moment';
 import React, { Component, Fragment } from 'react';
 import {
   ScrollView,
     Text,
   View
 } from 'react-native';
-import { Button, HelperText, TextInput } from 'react-native-paper';
+import { Button } from 'react-native-paper';
 import { connect } from 'react-redux';
 import * as Yup from 'yup';
-import { DateTimePickerComponent, Loader, MultiSelect } from '../../../components';
-import { addNewSite, editSite, getAllUsersDetails, getAllWorkCategory, getSiteSettings, updateSiteSettings } from '../../../services';
-import { ISiteRules, SiteType } from '../../../typings';
+import { Loader, MultiSelect } from '../../../components';
+import { getAllUsersDetails, getAllWorkCategory, getSiteSettings, updateSiteSettings } from '../../../services';
+import { ISiteRules } from '../../../typings';
 
 import styles from './site-setting.style';
-
-const siteSchema= Yup.object().shape({
-  siteName: Yup.string().required(),
-  ownerName: Yup.string().required(),
-  ownerContactNo: Yup.string().required(),
-  siteAddress: Yup.object().shape({
-    AddressLine1: Yup.string().required()
-  }),
-  siteEstimate: Yup.string().required()
-});
 
 const mapStateToProps = (state: any) => {
   return {

@@ -10,7 +10,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Button, HelperText, TextInput } from 'react-native-paper';
 import { connect } from 'react-redux';
 import * as Yup from 'yup';
-import { DateTimePickerComponent, MultiSelect } from '../../../components';
+import { DateTimePickerComponent, Loader, MultiSelect } from '../../../components';
 import { addNewSite, addNewWorkReport, editSite, editWorkReport, getAllSites, getSiteSettings } from '../../../services';
 import { IDropdownObject, IWorkDetailTypes, IWorkReportTypes, SiteType, UserTypes } from '../../../typings';
 
@@ -62,7 +62,8 @@ class AddWorkReport extends Component<IProps, any> {
       allSitesAsOption: [],
       siteRespond: [],
       allWorkTypeOption: [],
-      WorkDetailTypes
+      WorkDetailTypes,
+      xhrLoader: false
     };
 
   }
@@ -194,34 +195,43 @@ class AddWorkReport extends Component<IProps, any> {
     }
   }
 
-  submitEvent = async (values: FormikValues) => {
-    const { 
-      Works,
-      cementAmount,
-      date,
-      siteObject
-    } = values;
+  submitEvent = (values: FormikValues) => {
+    this.setState({
+      xhrLoader: true
+    }, async () => {
 
-    const isEdit = this.props.route.params.currentWorkReport && this.props.route.params.currentWorkReport._id;
-    const newWorkReportData: IWorkReportTypes = {
-      Works,
-      cementAmount,
-      date,
-      siteId: siteObject.value,
-      supervisorId: this.props.user.user_id,
-      supervisorName: `${this.props.user.firstName} ${this.props.user.lastName}`,
-      siteName: siteObject.label
-    };
+      const {
+        Works,
+        cementAmount,
+        date,
+        siteObject
+      } = values;
 
-    this.xhr.workReportCreated = await (isEdit ? editWorkReport({...newWorkReportData, _id: this.props.route.params.currentWorkReport._id, workId: this.props.route.params.currentWorkReport.workId }) : addNewWorkReport(newWorkReportData));
+      const isEdit = this.props.route.params.currentWorkReport && this.props.route.params.currentWorkReport._id;
+      const newWorkReportData: IWorkReportTypes = {
+        Works,
+        cementAmount,
+        date,
+        siteId: siteObject.value,
+        supervisorId: this.props.user.user_id,
+        supervisorName: `${this.props.user.firstName} ${this.props.user.lastName}`,
+        siteName: siteObject.label
+      };
 
-    if (this.xhr.workReportCreated && this.xhr.workReportCreated.data) {
-      this.props.navigation.goBack()
+      this.xhr.workReportCreated = await (isEdit ? editWorkReport({ ...newWorkReportData, _id: this.props.route.params.currentWorkReport._id, workId: this.props.route.params.currentWorkReport.workId }) : addNewWorkReport(newWorkReportData));
+
+      if (this.xhr.workReportCreated && this.xhr.workReportCreated.data) {
+        this.props.navigation.goBack()
         this.props.route.params.refreshData();
-        if(isEdit && this.props.route.params.setWorkReportDetails){
-          this.props.route.params.setWorkReportDetails({...newWorkReportData, _id: this.props.route.params.currentWorkReport._id, workId: this.props.route.params.currentWorkReport.workId });
+        if (isEdit && this.props.route.params.setWorkReportDetails) {
+          this.props.route.params.setWorkReportDetails({ ...newWorkReportData, _id: this.props.route.params.currentWorkReport._id, workId: this.props.route.params.currentWorkReport.workId });
         }
-    }
+      }
+
+      this.setState({
+        xhrLoader: false
+      });
+    });
   }
 
   render() {
@@ -241,7 +251,7 @@ class AddWorkReport extends Component<IProps, any> {
                     <View>
                       <View>
                         <MultiSelect value={props.values.siteObject} items={this.state.allSitesAsOption} onChange={(val: any) => { props.setFieldValue('siteObject', val); this.fetchSiteSetting(val); }} label="Site" />
-                        <HelperText type="error" visible={!!props.errors.siteObject?.value}>{ props.errors.siteObject?.value}
+                        <HelperText type="error" visible={!!props.errors.siteObject?.value}>{props.errors.siteObject?.value}
                         </HelperText>
                       </View>
 
@@ -328,14 +338,16 @@ class AddWorkReport extends Component<IProps, any> {
 
 
 
-                      <View style={styles.btnView}>
+                      {!this.state.xhrLoader && <View style={styles.btnView}>
                         <Button mode="contained" onPress={props.handleSubmit} uppercase={false} style={styles.btn}>
                           <Text style={{ fontSize: 16 }}>{'Save'}</Text>
                         </Button>
                         <Button mode="contained" onPress={this.goBack} uppercase={false} style={styles.btn}>
                           <Text style={{ fontSize: 16 }}>{'Cancel'}</Text>
                         </Button>
-                      </View>
+                      </View>}
+
+                      {this.state.xhrLoader && <Loader />}
 
                     </View>
 

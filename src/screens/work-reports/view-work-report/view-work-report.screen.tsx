@@ -11,6 +11,7 @@ import styles from './view-work-report.style';
 export const ViewWorkReportScreen = (props: any) => {
 
     const [currentWorkReport, setWorkReportDetails] = useState(props.route.params.currentWorkReport);
+    const canEditReport = props.route.params.user.user_id == currentWorkReport.supervisorId;
 
     const openEditSite = () => {
       const {refreshData} = props.route.params;
@@ -23,16 +24,17 @@ export const ViewWorkReportScreen = (props: any) => {
 
     return (
       <View style={styles.container}>
-        <View style={styles.btnContainer}>
+        {canEditReport && <View style={styles.btnContainer}>
           <Button mode="outlined" uppercase={false} onPress={openEditSite} style={styles.btnStyle}>
             <Text style={{fontSize: 16}}>{'Edit'}</Text>
           </Button>
-        </View>
+        </View>}
 
         <View style={{marginBottom: 1, flex: 1}}>
           <ScrollView>
             <View style={styles.scrollWrapper}>
               <LabelValueRow label="Id" value={currentWorkReport.workId}/>
+              <LabelValueRow label="Created By" value={currentWorkReport.supervisorName}/>
               <LabelValueRow label="Site" value={`${currentWorkReport.siteId} - ${currentWorkReport.siteName}`}/>
               <LabelValueRow label="Date" value={moment(currentWorkReport.date).format(COMMON.DATE_FORMAT)}/>
               <LabelValueRow label="Cement" value={currentWorkReport.cementAmount}/>

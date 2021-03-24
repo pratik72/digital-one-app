@@ -4,7 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
 import SiteScreen from '../screens/sites/site/site.screen';
-import { WorkReportScreen } from '../screens/work-reports/work-report/work-report.screen';
+import WorkReportScreen from '../screens/work-reports/work-report/work-report.screen';
 import { HeaderComponent } from '../components';
 import LoginScreen from '../screens/login/login.screen';
 import {store} from "../reducers/store";
@@ -21,6 +21,7 @@ import { NAVIGATION } from '../constants';
 import { MaterialsScreen } from '../screens/materials/materials/materials.screen';
 import AddMaterial from '../screens/materials/add-material/add-material.screen'
 import { ViewMaterialScreen } from '../screens/materials/view-material/view-material.screen';
+import { navigationRef } from './root.navigation';
 
 const Drawer = createDrawerNavigator();
 const SiteStack = createStackNavigator();
@@ -31,7 +32,6 @@ const AuthStack = createStackNavigator();
 const hideHeaderOpt = {
     headerShown: false
 }
-
 
 const siteNavigator = () => {
     return (
@@ -159,7 +159,7 @@ const AppContainer = () => {
   const user = store && store.getState().user;
   const initialRoute = user && user.token ? NAVIGATION.HOME : NAVIGATION.AUTH;
   return (
-    <NavigationContainer>
+    <NavigationContainer ref={navigationRef}>
       <MainStack.Navigator initialRouteName={initialRoute} screenOptions={{...hideHeaderOpt}}>
         <MainStack.Screen name={NAVIGATION.HOME} component={DrawerNavigator} />
         <MainStack.Screen name={NAVIGATION.AUTH} component={AuthNavigator} />

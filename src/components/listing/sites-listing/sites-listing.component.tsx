@@ -30,7 +30,8 @@ export const SitesListing = (props: any) => {
   const viewSite = (siteDetails: SiteType) => {
     props.navigation.push(NAVIGATION.VIEW_SITE, {
       siteDetails,
-      refreshSiteData: props.refreshSiteData
+      refreshSiteData: props.refreshSiteData,
+      user: props.user
     })
   }
 

@@ -12,14 +12,17 @@ import { EmptyListItem } from "../..";
 export const WorkReportListing = (props: any) => {
 
   const [listData, setListData] = useState([] as Array<IWorkReportTypes>);
+  const [refreshFlag, setRefreshFlag] = useState(false);
 
 
   const allWorkReport = async () => {
     if(props.currentSite.id){
+      setRefreshFlag(true);
       const allWorkReportRespond = await getAllWorkReport(props.currentSite.id);
       if(allWorkReportRespond && allWorkReportRespond.data){
         setListData(allWorkReportRespond.data);
       }
+      setRefreshFlag(false);
     }
   }
 
@@ -31,7 +34,8 @@ export const WorkReportListing = (props: any) => {
   const viewWorkReport = (currentWorkReport: IWorkReportTypes) => {
     props.navigation.push(NAVIGATION.VIEW_WORK_REPORT, {
       currentWorkReport,
-      refreshData: props.refreshData
+      refreshData: props.refreshData,
+      user: props.user
     })
   }
 
@@ -61,7 +65,7 @@ export const WorkReportListing = (props: any) => {
           data={listData}
           keyExtractor={(item: any) => item.workId}
           renderItem={_renderItem}
-          refreshing={false}
+          refreshing={refreshFlag}
           onRefresh={allWorkReport}
           ListEmptyComponent={EmptyListItem}
         />

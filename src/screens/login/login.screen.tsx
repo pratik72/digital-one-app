@@ -66,8 +66,12 @@ class LoginScreen extends Component<any, ILoginState> {
           Alert.alert("ERROR",this.xhr.submitdata.data.message);
           this.setState({
             loginLoader: false
-          })
+          });
         }
+      }else{
+        this.setState({
+          loginLoader: false
+        });
       }
     });
 

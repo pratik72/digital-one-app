@@ -4,6 +4,7 @@ import {
   Text
 } from 'react-native';
 import { Button } from 'react-native-paper';
+import { connect } from 'react-redux';
 import { MultiSelect } from '../../../components';
 import { WorkReportListing } from '../../../components/listing/work-report-listing/work-report-listing.component';
 import { NAVIGATION } from '../../../constants';
@@ -11,8 +12,13 @@ import { getAllSites } from '../../../services';
 
 import styles from './work-report.style';
 
+const mapStateToProps = (state: any) => {
+  return {
+    user: state.user
+  };
+};
 
-export class WorkReportScreen extends Component<any, any> {
+class WorkReportScreen extends Component<any, any> {
 
   private xhr: any = {};
 
@@ -87,3 +93,5 @@ export class WorkReportScreen extends Component<any, any> {
     );
   }
 }
+
+export default connect(mapStateToProps, {})(WorkReportScreen);

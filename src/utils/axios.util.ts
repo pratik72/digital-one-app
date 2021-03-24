@@ -4,8 +4,12 @@ import config from "../configs/config";
 import { setUser } from "../reducers/actions";
 import {store} from "../reducers/store";
 import { refreshToken } from "../services";
+import * as RootNavigation from '../navigation/root.navigation';
+import { NAVIGATION } from "../constants";
 
 const ServerEndPoint = config.apiGateway.URL;
+const MAX_CHECK_REFRESH_TOKEN_TRY = 5;
+let CHECKED_REFRESH_TOKEN_TRY = 0;
 
 export interface IRequestParams {
   url: string;
@@ -28,8 +32,14 @@ axios.interceptors.response.use( res => {
   const user = store && store.getState().user;
   let errorMsg = "ERROR\n\n Error while processing data";
   if(err.response && err.response.status === 401 && user && user.email){
+    if(MAX_CHECK_REFRESH_TOKEN_TRY == CHECKED_REFRESH_TOKEN_TRY){
+      store.dispatch(setUser({}));
+      Alert.alert("ERROR","Token expired. Please logout and login again");
+      RootNavigation.navigatePage(NAVIGATION.AUTH, { });
+    }
     const originalRequest = err.config;
     const newToken = await refreshToken(user.email);
+    CHECKED_REFRESH_TOKEN_TRY++;
     if(newToken && newToken.data){
       const newUser = {...user, token: newToken.data.token};
       store.dispatch(setUser(newUser));
