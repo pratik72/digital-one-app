@@ -9,7 +9,7 @@ import {
 import { Button, HelperText, TextInput } from 'react-native-paper';
 import { connect } from 'react-redux';
 import * as Yup from 'yup';
-import { DateTimePickerComponent, MultiSelect } from '../../../components';
+import { DateTimePickerComponent, Loader, MultiSelect } from '../../../components';
 import { addNewMaterial, editMaterial, getAllSites } from '../../../services';
 import { IDropdownObject, IMaterial, UserTypes } from '../../../typings';
 
@@ -49,7 +49,8 @@ class AddMaterial extends Component<IProps, any> {
     this.state = {
       initialValues: materialFormsObj,
       allSitesAsOption: [],
-      siteRespond: []
+      siteRespond: [],
+      isXhrSubmit: false
     };
 
   }
@@ -170,48 +171,56 @@ class AddMaterial extends Component<IProps, any> {
     this.setState({ [stateKey]: selectedItems });
   };
 
-  submitEvent = async (values: FormikValues) => {
-    const { 
-      Works,
-      cementAmount,
-      date,
-      siteObject,
-      materialType,
-      materialUnit,
-      materialTotalQuantity,
-      pricePerUnit,
-      invoicePrice,
-      invoiceNo,
-      supplier,
-      remarks
-    } = values;
-
-    const isEdit = this.props.route.params.currentMaterial && this.props.route.params.currentMaterial.metId;
-    const newMaterialData: IMaterial = {
-      date,
-      siteId: siteObject.value,
-      supervisorId: this.props.user.user_id,
-      supervisorName: `${this.props.user.firstName} ${this.props.user.lastName}`,
-      siteName: siteObject.label,
-      materialType,
-      materialUnit,
-      materialTotalQuantity,
-      pricePerUnit,
-      invoicePrice,
-      invoiceNo,
-      supplier,
-      remarks
-    };
-
-    this.xhr.workReportCreated = await (isEdit ? editMaterial({...newMaterialData, metId: this.props.route.params.currentMaterial.metId, _id: this.props.route.params.currentMaterial._id }) : addNewMaterial(newMaterialData));
-
-    if (this.xhr.workReportCreated && this.xhr.workReportCreated.data) {
-      this.props.navigation.goBack()
-        this.props.route.params.refreshData();
-        if(isEdit && this.props.route.params.setMaterialDetails){
-          this.props.route.params.setMaterialDetails({...newMaterialData, _id: this.props.route.params.currentMaterial._id, metId: this.props.route.params.currentMaterial.metId });
-        }
-    }
+  submitEvent = (values: FormikValues) => {
+    this.setState({
+      isXhrSubmit: true
+    }, async () => {
+      const { 
+        Works,
+        cementAmount,
+        date,
+        siteObject,
+        materialType,
+        materialUnit,
+        materialTotalQuantity,
+        pricePerUnit,
+        invoicePrice,
+        invoiceNo,
+        supplier,
+        remarks
+      } = values;
+  
+      const isEdit = this.props.route.params.currentMaterial && this.props.route.params.currentMaterial.metId;
+      const newMaterialData: IMaterial = {
+        date,
+        siteId: siteObject.value,
+        supervisorId: this.props.user.user_id,
+        supervisorName: `${this.props.user.firstName} ${this.props.user.lastName}`,
+        siteName: siteObject.label,
+        materialType,
+        materialUnit,
+        materialTotalQuantity,
+        pricePerUnit,
+        invoicePrice,
+        invoiceNo,
+        supplier,
+        remarks
+      };
+  
+      this.xhr.workReportCreated = await (isEdit ? editMaterial({...newMaterialData, metId: this.props.route.params.currentMaterial.metId, _id: this.props.route.params.currentMaterial._id }) : addNewMaterial(newMaterialData));
+  
+      if (this.xhr.workReportCreated && this.xhr.workReportCreated.data) {
+        this.props.navigation.goBack()
+          this.props.route.params.refreshData();
+          if(isEdit && this.props.route.params.setMaterialDetails){
+            this.props.route.params.setMaterialDetails({...newMaterialData, _id: this.props.route.params.currentMaterial._id, metId: this.props.route.params.currentMaterial.metId });
+          }
+      }else{
+        this.setState({
+          isXhrSubmit: false
+        });
+      }
+    });
   }
 
   render() {
@@ -335,14 +344,16 @@ class AddMaterial extends Component<IProps, any> {
                         />
                       </View>
 
-                      <View style={styles.btnView}>
+                      {!this.state.isXhrSubmit && <View style={styles.btnView}>
                         <Button mode="contained" onPress={props.handleSubmit} uppercase={false} style={styles.btn}>
                           <Text style={{ fontSize: 16 }}>{'Save'}</Text>
                         </Button>
                         <Button mode="contained" onPress={this.goBack} uppercase={false} style={styles.btn}>
                           <Text style={{ fontSize: 16 }}>{'Cancel'}</Text>
                         </Button>
-                      </View>
+                      </View>}
+
+                      {this.state.isXhrSubmit && <Loader />}
 
                     </View>
 

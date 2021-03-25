@@ -12,14 +12,17 @@ import { EmptyListItem } from "../..";
 export const MaterialsListing = (props: any) => {
 
   const [listData, setListData] = useState([] as Array<IMaterial>);
+  const [refreshFlag, setRefreshFlag] = useState(false);
 
 
   const allMaterials = async () => {
     if(props.currentSite.id){
+      setRefreshFlag(true);
       const allMaterialsRespond = await getAllMaterial(props.currentSite.id);
       if(allMaterialsRespond && allMaterialsRespond.data){
         setListData(allMaterialsRespond.data);
       }
+      setRefreshFlag(false);
     }
   }
 
@@ -60,7 +63,7 @@ export const MaterialsListing = (props: any) => {
           data={listData}
           keyExtractor={(item: any) => item._id}
           renderItem={_renderItem}
-          refreshing={false}
+          refreshing={refreshFlag}
           onRefresh={allMaterials}
           ListEmptyComponent={EmptyListItem}
         />

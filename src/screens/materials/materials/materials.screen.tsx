@@ -62,7 +62,7 @@ export class MaterialsScreen extends Component<any, any> {
 
   refreshData = () => {
     this.setState({
-      refreshFlag: Math.floor(Math.random() * 6) + 1 
+      refreshFlag: Date.now() 
     });
   }
 
