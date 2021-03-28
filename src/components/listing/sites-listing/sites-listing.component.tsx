@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 
 import { getAllSites } from "../../../services";
 import styles from './sites-listing.style';
@@ -7,18 +7,21 @@ import { SiteType } from "../../../typings";
 import { FlatList, View } from "react-native";
 import { DataTable } from "react-native-paper";
 import { COMMON, NAVIGATION } from "../../../constants";
-import { EmptyListItem } from "../..";
+import { EmptyListItem, PaginationComponent } from "../..";
 
 export const SitesListing = (props: any) => {
 
   const [listData, setListData] = useState([] as Array<SiteType>);
+  const [totalPages, setTotalPages] = useState(0);
   const [refreshFlag, setRefreshFlag] = useState(false);
 
-  const allSites = async () => {
+  const allSites = async (page: number = 1) => {
     setRefreshFlag(true);
-    const allSitesRespond = await getAllSites();
-    if (allSitesRespond && allSitesRespond.data) {
-      setListData(allSitesRespond.data);
+    const allSitesRespond = await getAllSites({ page });
+    if (allSitesRespond && allSitesRespond.data && allSitesRespond.data[0].data) {
+      const totalPage = Math.ceil(allSitesRespond.data[0].count / COMMON.PAGE_SIGE);
+      setListData(allSitesRespond.data[0].data);
+      setTotalPages(totalPage);
     }
     setRefreshFlag(false);
   }
@@ -35,35 +38,41 @@ export const SitesListing = (props: any) => {
     })
   }
 
-  const _renderItem = ({item}: {item: SiteType}) => {
+  const _renderItem = ({ item }: { item: SiteType }) => {
     return (
-    <DataTable.Row onPress={()=>viewSite(item)} key={item.siteId}>
-      <DataTable.Cell>{item.siteName}</DataTable.Cell>
-      <DataTable.Cell>{item.ownerName}</DataTable.Cell>
-      <DataTable.Cell>{moment(item.tentativeDeadline).format(COMMON.DATE_FORMAT)}</DataTable.Cell>
-    </DataTable.Row>
+      <DataTable.Row onPress={() => viewSite(item)} key={item.siteId}>
+        <DataTable.Cell>{item.siteName}</DataTable.Cell>
+        <DataTable.Cell>{item.ownerName}</DataTable.Cell>
+        <DataTable.Cell>{moment(item.tentativeDeadline).format(COMMON.DATE_FORMAT)}</DataTable.Cell>
+      </DataTable.Row>
     )
   }
 
   return (
-    <View>
-      <DataTable>
-        <DataTable.Header>
-          <DataTable.Title>Site Name</DataTable.Title>
-          <DataTable.Title>Owner Name</DataTable.Title>
-          <DataTable.Title>Complete Date</DataTable.Title>
-        </DataTable.Header>
+    <Fragment>
 
-        <FlatList
-          contentContainerStyle={{ alignSelf: 'stretch' }}
-          data={listData}
-          keyExtractor={(item: any) => item.siteId}
-          renderItem={_renderItem}
-          refreshing={refreshFlag}
-          onRefresh={allSites}
-          ListEmptyComponent={EmptyListItem}
-        />
-      </DataTable>
-    </View>
+      <View>
+        <DataTable>
+          <DataTable.Header>
+            <DataTable.Title>Site Name</DataTable.Title>
+            <DataTable.Title>Owner Name</DataTable.Title>
+            <DataTable.Title>Complete Date</DataTable.Title>
+          </DataTable.Header>
+
+          <FlatList
+            contentContainerStyle={{ alignSelf: 'stretch' }}
+            data={listData}
+            keyExtractor={(item: any) => item.siteId}
+            renderItem={_renderItem}
+            refreshing={refreshFlag}
+            onRefresh={allSites}
+            ListEmptyComponent={EmptyListItem}
+          />
+        </DataTable>
+      </View>
+      <View style={{ justifyContent: 'flex-end', flex: 1, marginVertical: 20 }}>
+        <PaginationComponent totalPages={totalPages} changePage={allSites} />
+      </View>
+    </Fragment>
   );
 };

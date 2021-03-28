@@ -42,11 +42,11 @@ class WorkReportScreen extends Component<any, any> {
   }
 
   allSites = async () => {
-    this.xhr.respond = await getAllSites();
-    if (this.xhr.respond.data) {
+    this.xhr.respond = await getAllSites({page:1});
+    if (this.xhr.respond.data[0] && this.xhr.respond.data[0].data) {
       const sitesOptions: Array<{}> = [];
-      for (let index = 0; index < this.xhr.respond.data.length; index++) {
-        const element = this.xhr.respond.data[index];
+      for (let index = 0; index < this.xhr.respond.data[0].data.length; index++) {
+        const element = this.xhr.respond.data[0].data[index];
         sitesOptions.push({
           value: element.siteId,
           label: element.siteName,

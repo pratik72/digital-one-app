@@ -16,11 +16,11 @@ export const WorkReportListing = (props: any) => {
 
 
   const allWorkReport = async () => {
-    if(props.currentSite.id){
+    if (props.currentSite.id) {
       setRefreshFlag(true);
       const allWorkReportRespond = await getAllWorkReport(props.currentSite.id);
-      if(allWorkReportRespond && allWorkReportRespond.data){
-        setListData(allWorkReportRespond.data);
+      if (allWorkReportRespond && allWorkReportRespond.data[0] && allWorkReportRespond.data[0].data) {
+        setListData(allWorkReportRespond.data[0].data);
       }
       setRefreshFlag(false);
     }
@@ -39,14 +39,14 @@ export const WorkReportListing = (props: any) => {
     })
   }
 
-  const _renderItem = ({item}: {item: IWorkReportTypes}) => {
+  const _renderItem = ({ item }: { item: IWorkReportTypes }) => {
     return (
-    <DataTable.Row onPress={()=>viewWorkReport(item)} key={item.workId}>
-      <DataTable.Cell>{item.workId}</DataTable.Cell>
-      <DataTable.Cell>{item.supervisorName}</DataTable.Cell>
-      <DataTable.Cell>{item.siteName}</DataTable.Cell>
-      <DataTable.Cell>{moment(item.date).format(COMMON.DATE_FORMAT)}</DataTable.Cell>
-    </DataTable.Row>
+      <DataTable.Row onPress={() => viewWorkReport(item)} key={item.workId}>
+        <DataTable.Cell>{item.workId}</DataTable.Cell>
+        <DataTable.Cell>{item.supervisorName}</DataTable.Cell>
+        <DataTable.Cell>{item.siteName}</DataTable.Cell>
+        <DataTable.Cell>{moment(item.date).format(COMMON.DATE_FORMAT)}</DataTable.Cell>
+      </DataTable.Row>
     )
   }
 
