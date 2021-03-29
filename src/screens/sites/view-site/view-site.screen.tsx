@@ -12,6 +12,7 @@ export const ViewSiteScreen = (props: any) => {
 
   const [siteDetails, setSiteDetails] = useState(props.route.params.siteDetails);
   const [canUpdateSite, setUpdateSiteFlag] = useState(false);
+  const [siteCreator, setSiteCreator] = useState({} as any);
   const [xhrLoader, setXhrLoader] = useState(true);
 
     const getCurrentSiteSetting = async () => {
@@ -22,6 +23,10 @@ export const ViewSiteScreen = (props: any) => {
           const element = allAdminUsers[index];
           if(element.adminUserId === props.route.params.user.user_id){
             setUpdateSiteFlag(true);
+          }
+
+          if(element.adminUserId === siteDetails.createdBy){
+            setSiteCreator(element)
           }
         }
       }
@@ -68,6 +73,7 @@ export const ViewSiteScreen = (props: any) => {
               <View style={styles.scrollWrapper}>
                 <LabelValueRow label="Id" value={siteDetails.siteId}/>
                 <LabelValueRow label="Site Name" value={siteDetails.siteName}/>
+                <LabelValueRow label="Site Creator" value={siteCreator ? siteCreator.adminUserName: ''}/>
                 <LabelValueRow label="Owner Name" value={siteDetails.ownerName}/>
                 <LabelValueRow label="Owner Contract No" value={siteDetails.ownerContactNo}/>
                 <LabelValueRow label="Address" value={siteDetails.siteAddress.AddressLine1}/>

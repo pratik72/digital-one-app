@@ -1,4 +1,4 @@
-import { get, post } from "../utils/axios.util";
+import { get, getQueryBasedOnParam, post } from "../utils/axios.util";
 import {IWorkReportTypes} from "../typings"
 
 export const addNewWorkReport = (siteParam: IWorkReportTypes) => {
@@ -9,6 +9,7 @@ export const editWorkReport = (siteParam: IWorkReportTypes) => {
     return post({ url: 'constructionSite/editWorkDetails', body: siteParam })
 };
 
-export const getAllWorkReport = (siteId: string) => {
-    return get({ url: `constructionSite/getWorkDetail?siteId=${siteId}`})
+export const getAllWorkReport = ({ page, siteId }: { page?:number, siteId:string }) => {
+    const query = getQueryBasedOnParam({ page, siteId });
+    return get({ url: `constructionSite/getWorkDetail?${query}`})
 };

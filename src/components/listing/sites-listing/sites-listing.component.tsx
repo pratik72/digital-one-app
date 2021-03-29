@@ -70,7 +70,7 @@ export const SitesListing = (props: any) => {
           />
         </DataTable>
       </View>
-      <View style={{ justifyContent: 'flex-end', flex: 1, marginVertical: 20 }}>
+      <View style={styles.paginationView}>
         <PaginationComponent totalPages={totalPages} changePage={allSites} />
       </View>
     </Fragment>

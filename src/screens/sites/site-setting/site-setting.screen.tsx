@@ -323,7 +323,7 @@ class SiteSettingScreen extends Component<any, ISiteSettingStates> {
 
               <View style={styles.btnContainer}>
                 <Text style={styles.labelText}>Site Category</Text>
-                <MultiSelect values={this.state.workCategoryOpt} items={this.state.allWorkCategoryAsOption} onChange={(data: any)=>this.handleChangeData(data, 'workCategoryOpt')} multiple={true}/>
+                <MultiSelect values={this.state.workCategoryOpt} items={this.state.allWorkCategoryAsOption} onChange={(data: any)=>this.handleChangeData(data, 'workCategoryOpt')} multiple={true} label="Work Category" />
               </View>
             </ScrollView>
           </View>

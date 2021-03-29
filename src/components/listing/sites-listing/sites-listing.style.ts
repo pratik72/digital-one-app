@@ -9,6 +9,11 @@ const styles = StyleSheet.create({
         justifyContent: "space-around",
         marginTop: 10,
 
+    },
+    paginationView: {
+        justifyContent: 'flex-end',
+        flex: 1,
+        marginVertical: 20
     }
 });
 

@@ -32,6 +32,10 @@ export const PaginationComponent = (props: IPaginationProps) => {
     }
   }, [allViewRef]);
 
+  useEffect(() => {
+    setCurrentPage(listData[0] || 0);
+  }, [props.totalPages]);
+
   const _renderItem = ({ item }: { item: number }) => {
     return (
       <View key={item.toString()} onLayout={(layoutProps) => _onLayout(item, layoutProps)}>

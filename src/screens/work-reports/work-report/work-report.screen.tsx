@@ -59,7 +59,10 @@ class WorkReportScreen extends Component<any, any> {
   }
 
   openAddSite = () => {
-    this.props.navigation.push(NAVIGATION.ADD_WORK_REPORT, {refreshData: this.refreshData})
+    this.props.navigation.push(NAVIGATION.ADD_WORK_REPORT, {
+      refreshData: this.refreshData,
+      currentSite: this.state.currentSite
+    })
   }
 
   refreshData = () => {

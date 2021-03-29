@@ -26,37 +26,18 @@ export class MaterialsScreen extends Component<any, any> {
   }
 
   openAddMaterial = () => {
-    this.props.navigation.push(NAVIGATION.ADD_MATERIAL, {refreshData: this.refreshData})
+    this.props.navigation.push(NAVIGATION.ADD_MATERIAL, {
+      refreshData: this.refreshData,
+      currentSite: this.state.currentSite
+    })
   }
 
   componentDidMount = () => {
-    this.allSites();
   }
 
   componentWillUnmount = () => {
     if (this.xhr.respond && this.xhr.respond.abort) {
       this.xhr.respond.abort();
-    }
-  }
-
-  allSites = async () => {
-    this.xhr.respond = await getAllSites();
-    if (this.xhr.respond.data) {
-      const sitesOptions: Array<{}> = [];
-      for (let index = 0; index < this.xhr.respond.data.length; index++) {
-        const element = this.xhr.respond.data[index];
-        sitesOptions.push({
-          value: element.siteId,
-          label: element.siteName,
-          id: element.siteId,
-        });
-      }
-
-      this.setState({
-        allSitesAsOption: sitesOptions,
-        currentSite: sitesOptions[0]
-      }, this.refreshData);
-
     }
   }
 
@@ -66,12 +47,37 @@ export class MaterialsScreen extends Component<any, any> {
     });
   }
 
+  fetcAllSiteData = async (searchText: string) => {
+    this.xhr.respond = await getAllSites(searchText ? {siteName: searchText}: {page:1});
+    if (this.xhr.respond.data[0] && this.xhr.respond.data[0].data) {
+      const sitesOptions: Array<{}> = [];
+      for (let index = 0; index < this.xhr.respond.data[0].data.length; index++) {
+        const element = this.xhr.respond.data[0].data[index];
+        sitesOptions.push({
+          value: element.siteId,
+          label: element.siteName,
+          id: element.siteId,
+        });
+      }
+
+      return sitesOptions;
+    }
+    return [];
+  }
+
   render() {
     return (
       <View style={styles.container}>
         <View style={styles.btnContainer}>
           <View style={{flex:1, paddingHorizontal: 10 }}>
-            <MultiSelect value={this.state.currentSite} items={this.state.allSitesAsOption} onChange={(val: any) => { this.setState({'currentSite': val}, this.refreshData); }} label="Site" />
+            <MultiSelect
+              value={this.state.currentSite}
+              items={this.state.allSitesAsOption}
+              onChange={(val: any) => { this.setState({'currentSite': val}, this.refreshData); }}
+              label="Site"
+              apiData={this.fetcAllSiteData}
+              isDefaultData={true}
+            />
           </View>
           <View>  
             <Button mode="outlined" uppercase={false} onPress={this.openAddMaterial}>

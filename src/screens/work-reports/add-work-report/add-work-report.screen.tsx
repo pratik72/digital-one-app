@@ -69,6 +69,7 @@ class AddWorkReport extends Component<IProps, any> {
   }
 
   getWorkReportFormObject = (WorkDetailTypes: IWorkDetailTypes) => {
+    const { currentSite } = this.props.route.params;
 
     if (this.props.route.params.currentWorkReport && this.props.route.params.currentWorkReport._id) {
       const allExistingWorks = [...this.props.route.params.currentWorkReport.Works];
@@ -103,16 +104,16 @@ class AddWorkReport extends Component<IProps, any> {
         cementAmount: 0,
         date: moment().toDate(),
         siteId: "",
-        siteObject: {} as IDropdownObject,
-        supervisorId: "",
+        siteObject: currentSite,
+        supervisorId: currentSite.value,
         supervisorName: "",
-        siteName: ""
+        siteName: currentSite.label
       }
     }
   }
 
   allSites = async () => {
-    this.xhr.allSiteRespond = await getAllSites({page: 1});
+    this.xhr.allSiteRespond = await getAllSites({ page: 1 });
     if (this.xhr.allSiteRespond.data && this.xhr.allSiteRespond.data[0].data) {
       const sitesOptions: Array<{}> = [];
       for (let index = 0; index < this.xhr.allSiteRespond.data[0].data.length; index++) {
@@ -136,7 +137,8 @@ class AddWorkReport extends Component<IProps, any> {
   }
 
   componentDidMount = () => {
-    this.allSites();
+    const { currentSite } = this.props.route.params;
+    this.fetchSiteSetting(currentSite);
     if (this.props.route.params.currentWorkReport && this.props.route.params.currentWorkReport._id) {
       this.props.navigation.setOptions({
         title: "Edit Work Report"
@@ -246,11 +248,18 @@ class AddWorkReport extends Component<IProps, any> {
             {props => {
               return (
                 <View>
-                  <ScrollView style={{ padding: 0 }} contentContainerStyle={{ flexGrow: 1 }}>
+                  <ScrollView style={{ padding: 0 }} contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps='handled'>
 
                     <View>
                       <View>
-                        <MultiSelect value={props.values.siteObject} items={this.state.allSitesAsOption} onChange={(val: any) => { props.setFieldValue('siteObject', val); this.fetchSiteSetting(val); }} label="Site" />
+                        <TextInput
+                          label="Site"
+                          value={props.values.siteName}
+                          onChangeText={props.handleChange('siteName')}
+                          returnKeyType='next'
+                          disabled={true}
+                          error={!!props.touched.siteName && !!props.errors.siteName}
+                        />
                         <HelperText type="error" visible={!!props.errors.siteObject?.value}>{props.errors.siteObject?.value}
                         </HelperText>
                       </View>

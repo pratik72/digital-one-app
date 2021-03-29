@@ -67,6 +67,8 @@ class AddMaterial extends Component<IProps, any> {
 
   getMaterialFormObject = () => {
 
+    const { currentSite } = this.props.route.params;
+
     if (this.props.route.params.currentMaterial && this.props.route.params.currentMaterial._id) {
       const {
         date,
@@ -107,11 +109,11 @@ class AddMaterial extends Component<IProps, any> {
     } else {
       return {
         date: moment().toDate(),
-        siteId: "",
-        siteObject: {} as IDropdownObject,
+        siteId: currentSite.value,
+        siteObject: currentSite,
         supervisorId: "",
         supervisorName: "",
-        siteName: "",
+        siteName: currentSite.label,
         materialType : "",
         materialUnit : "",
         materialTotalQuantity : "",
@@ -124,29 +126,7 @@ class AddMaterial extends Component<IProps, any> {
     }
   }
 
-  allSites = async () => {
-    this.xhr.respond = await getAllSites();
-    if (this.xhr.respond.data) {
-      const sitesOptions: Array<{}> = [];
-      for (let index = 0; index < this.xhr.respond.data.length; index++) {
-        const element = this.xhr.respond.data[index];
-        sitesOptions.push({
-          value: element.siteId,
-          label: element.siteName,
-          id: element.siteId,
-        });
-      }
-
-      this.setState({
-        allSitesAsOption: sitesOptions,
-        siteRespond: this.xhr.respond.data
-      });
-
-    }
-  }
-
   componentDidMount = () => {
-    this.allSites();
     if (this.props.route.params.currentMaterial && this.props.route.params.currentMaterial._id) {
       this.props.navigation.setOptions({
         title: "Edit Material"
@@ -236,11 +216,22 @@ class AddMaterial extends Component<IProps, any> {
             {props => {
               return (
                 <View>
-                  <ScrollView style={{ padding: 0 }} contentContainerStyle={{ flexGrow: 1 }}>
+                  <ScrollView 
+                    style={{ padding: 0 }}
+                    contentContainerStyle={{ flexGrow: 1 }}
+                    keyboardShouldPersistTaps="handled"
+                  >
 
                     <View>
                       <View>
-                        <MultiSelect value={props.values.siteObject} items={this.state.allSitesAsOption} onChange={(val: any) => { props.setFieldValue('siteObject', val); }} label="Site" disabled={isEdit} />
+                        <TextInput
+                          label="Site"
+                          value={props.values.siteName}
+                          onChangeText={props.handleChange('siteName')}
+                          returnKeyType='next'
+                          disabled={true}
+                          error={!!props.touched.siteName && !!props.errors.siteName}
+                        />
                         <HelperText type="error" visible={!!props.errors.siteObject?.value}>{ props.errors.siteObject?.value}
                         </HelperText>
                       </View>
@@ -317,6 +308,7 @@ class AddMaterial extends Component<IProps, any> {
                           value={props.values.invoicePrice}
                           onChangeText={props.handleChange('invoicePrice')}
                           onSubmitEditing={this.setFocusOnNextField.bind(this, 'supplier')}
+                          error={!!props.touched.invoicePrice && !!props.errors.invoicePrice}
                           returnKeyType='next'
                         />
                       </View>
