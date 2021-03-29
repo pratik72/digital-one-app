@@ -115,8 +115,6 @@ const LogoutDrawerContent = (props: any) => {
       <DrawerUserInfo />
       <DrawerItemList {...props} />
       <DrawerItem label="Logout" onPress={async () => {
-        console.log(props)
-        console.log(store)
         const logoutRespond = await logout();
         if(logoutRespond.data){
            Alert.alert("Logout Success!")

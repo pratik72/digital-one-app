@@ -112,11 +112,11 @@ class AddWorkReport extends Component<IProps, any> {
   }
 
   allSites = async () => {
-    this.xhr.allSiteRespond = await getAllSites();
-    if (this.xhr.allSiteRespond.data) {
+    this.xhr.allSiteRespond = await getAllSites({page: 1});
+    if (this.xhr.allSiteRespond.data && this.xhr.allSiteRespond.data[0].data) {
       const sitesOptions: Array<{}> = [];
-      for (let index = 0; index < this.xhr.allSiteRespond.data.length; index++) {
-        const element = this.xhr.allSiteRespond.data[index];
+      for (let index = 0; index < this.xhr.allSiteRespond.data[0].data.length; index++) {
+        const element = this.xhr.allSiteRespond.data[0].data[index];
         sitesOptions.push({
           value: element.siteId,
           label: element.siteName,

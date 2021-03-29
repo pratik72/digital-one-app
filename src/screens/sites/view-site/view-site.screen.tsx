@@ -15,7 +15,6 @@ export const ViewSiteScreen = (props: any) => {
   const [xhrLoader, setXhrLoader] = useState(true);
 
     const getCurrentSiteSetting = async () => {
-      console.log(xhrLoader)
       const siteSetting = await getSiteSettings({siteId: siteDetails?.siteId, userId: props.route.params.user.user_id});
       if(siteSetting.data){
         const allAdminUsers = siteSetting.data.adminUsers;

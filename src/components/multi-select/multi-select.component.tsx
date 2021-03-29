@@ -5,9 +5,13 @@ import {
   Text,
   View,
   TouchableOpacity,
-  FlatList
+  TextInput,
+  FlatList,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform
 } from 'react-native';
-import { Button, Chip, Colors, Dialog, HelperText, TextInput } from 'react-native-paper';
+import { Button, Chip, Colors } from 'react-native-paper';
 
 
 import styles from './multi-select.component.style';
@@ -15,7 +19,7 @@ import { IItemObject, IMultiSelectProps, IMultiSelectStates } from './multi-sele
 
 export class MultiSelect extends Component<IMultiSelectProps, IMultiSelectStates> {
 
-
+  private BACKUP_LIST = [] as Array<IItemObject>;
   constructor(props: IMultiSelectProps) {
     super(props);
     this.state = {
@@ -24,13 +28,37 @@ export class MultiSelect extends Component<IMultiSelectProps, IMultiSelectStates
       dialogVisible: false,
       items: this.props.items || [] as Array<IItemObject>,
       selectedItems: [] as Array<IItemObject>,
-      disabled: this.props.disabled || false
+      disabled: this.props.disabled || false,
+      searchText: ""
     }
   }
 
   componentDidMount = () => {
+    this.loadApiData(true);
   }
 
+  /**
+   * Function used to load api data based on function props.apiData
+   * @param onLoadFlag : to check function is caled on onload
+   */
+  loadApiData = async (onLoadFlag?: boolean) => {
+    if (this.props.apiData) {
+      const items = await this.props.apiData(this.state.searchText);
+      this.setState({
+        items
+      });
+      if (onLoadFlag && this.props.isDefaultData) {
+        this.setState({
+          value: items[0]
+        }, () => { this.props.onChange(this.state.value) });
+      }
+    }
+  }
+
+  /**
+   * 
+   * @param prevProps : old props of component
+   */
   componentDidUpdate = (prevProps: IMultiSelectProps) => {
     if (this.props.values != prevProps.values) {
       this.setState({
@@ -52,7 +80,7 @@ export class MultiSelect extends Component<IMultiSelectProps, IMultiSelectStates
 
     if (this.props.items != prevProps.items) {
       this.setState({
-        items: this.props.items
+        items: this.props.items || []
       });
     }
   }
@@ -93,13 +121,17 @@ export class MultiSelect extends Component<IMultiSelectProps, IMultiSelectStates
       });
       this.setState({
         dialogVisible: false,
+        searchText: "",
         values,
+        items: this.BACKUP_LIST.length ? this.BACKUP_LIST : this.state.items
       }, () => {
         this.props.onChange(values);
       });
     } else {
       this.setState({
         dialogVisible: false,
+        searchText: "",
+        items: this.BACKUP_LIST.length ? this.BACKUP_LIST : this.state.items
       }, () => {
         this.props.onChange(this.state.value);
       });
@@ -139,6 +171,26 @@ export class MultiSelect extends Component<IMultiSelectProps, IMultiSelectStates
     );
   }
 
+  searchTextChanged = (text: any) => {
+    this.setState({
+      searchText: text
+    }, this.filterListData);
+  }
+
+  filterListData = () => {
+    if (!this.BACKUP_LIST.length) {
+      this.BACKUP_LIST = this.state.items;
+    }
+    if (this.props.apiData) {
+      this.loadApiData();
+    } else {
+      const newArray = _.filter(this.BACKUP_LIST, (obj) => obj.label.toLowerCase().includes(this.state.searchText.toLowerCase()));
+      this.setState({
+        items: newArray || []
+      });
+    }
+  }
+
   render() {
     return (
       <View style={styles.container}>
@@ -168,7 +220,15 @@ export class MultiSelect extends Component<IMultiSelectProps, IMultiSelectStates
           visible={this.state.dialogVisible}
           onRequestClose={this.closeDialog}
         >
+
           <View style={styles.modalView}>
+            <TextInput
+              placeholder={`Search ${this.props.label}`}
+              value={this.state.searchText}
+              onChangeText={this.searchTextChanged}
+              returnKeyType='done'
+              style={{ marginHorizontal: 15, paddingVertical: 7, marginBottom: 10, backgroundColor: Colors.grey100, paddingHorizontal: 15 }}
+            />
             <Text style={styles.modalLable}>Select {this.props.label}</Text>
             <View style={styles.listView}>
               <FlatList
@@ -190,6 +250,7 @@ export class MultiSelect extends Component<IMultiSelectProps, IMultiSelectStates
               </TouchableOpacity>
             </View>}
           </View>
+
         </Modal>
 
       </View>

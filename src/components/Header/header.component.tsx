@@ -18,11 +18,11 @@ export class HeaderComponent extends React.Component<Props, any> {
     };
   }
 
-  _goBack = () => console.log('Went back');
+  _goBack = () => {}
 
-  _handleSearch = () => console.log('Searching');
+  _handleSearch = () => {}
 
-  _handleMore = () => console.log('Shown more');
+  _handleMore = () => {}
 
   closeMenu = () => {
 

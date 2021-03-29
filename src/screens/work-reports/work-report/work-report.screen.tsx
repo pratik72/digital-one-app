@@ -32,7 +32,6 @@ class WorkReportScreen extends Component<any, any> {
   }
 
   componentDidMount = () => {
-    this.allSites();
   }
 
   componentWillUnmount = () => {
@@ -41,8 +40,8 @@ class WorkReportScreen extends Component<any, any> {
     }
   }
 
-  allSites = async () => {
-    this.xhr.respond = await getAllSites({page:1});
+  fetcAllSiteData = async (searchText: string) => {
+    this.xhr.respond = await getAllSites(searchText ? {siteName: searchText}: {page:1});
     if (this.xhr.respond.data[0] && this.xhr.respond.data[0].data) {
       const sitesOptions: Array<{}> = [];
       for (let index = 0; index < this.xhr.respond.data[0].data.length; index++) {
@@ -54,12 +53,9 @@ class WorkReportScreen extends Component<any, any> {
         });
       }
 
-      this.setState({
-        allSitesAsOption: sitesOptions,
-        currentSite: sitesOptions[0]
-      }, this.refreshData);
-
+      return sitesOptions;
     }
+    return [];
   }
 
   openAddSite = () => {
@@ -77,7 +73,14 @@ class WorkReportScreen extends Component<any, any> {
       <View style={styles.container}>
         <View style={styles.btnContainer}>
           <View style={{flex:1, paddingHorizontal: 10 }}>
-            <MultiSelect value={this.state.currentSite} items={this.state.allSitesAsOption} onChange={(val: any) => { this.setState({'currentSite': val}, this.refreshData); }} label="Site" />
+            <MultiSelect
+              value={this.state.currentSite}
+              items={this.state.allSitesAsOption}
+              onChange={(val: any) => { this.setState({'currentSite': val}, this.refreshData); }}
+              label="Site"
+              apiData={this.fetcAllSiteData}
+              isDefaultData={true}
+            />
           </View>
           <View>
             <Button mode="outlined" uppercase={false} onPress={this.openAddSite}>

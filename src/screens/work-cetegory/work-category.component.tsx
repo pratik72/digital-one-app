@@ -76,7 +76,6 @@ export class WorkCategory extends React.PureComponent<any, IState> {
   }
 
   saveData =  (formData: FormikValues, formikObj: any) => {
-    console.log(formikObj);
     const { newWorkCategory } = formData;
     const { editCategory } = this.state;
     if (newWorkCategory) {

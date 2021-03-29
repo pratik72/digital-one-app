@@ -21,6 +21,8 @@ export const WorkReportListing = (props: any) => {
       const allWorkReportRespond = await getAllWorkReport(props.currentSite.id);
       if (allWorkReportRespond && allWorkReportRespond.data[0] && allWorkReportRespond.data[0].data) {
         setListData(allWorkReportRespond.data[0].data);
+      }else{
+        setListData([]);
       }
       setRefreshFlag(false);
     }

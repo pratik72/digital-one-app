@@ -1,12 +1,14 @@
 export interface IMultiSelectProps {
     values?: Array<IItemObject>;
     value?: IItemObject;
-    items: Array<IItemObject>;
+    items?: Array<IItemObject>;
+    apiData?: CallableFunction;
     onChange: Function;
     multiple?: boolean;
     name?: string;
     label?: string;
     disabled?: boolean;
+    isDefaultData?: boolean;
 }
 
 export interface IItemObject {
@@ -24,4 +26,5 @@ export interface IMultiSelectStates {
     items: Array<IItemObject>;
     selectedItems: Array<IItemObject>;
     disabled: boolean;
+    searchText: string;
 }
