@@ -13,7 +13,7 @@ export const signUp = (signupParam: SignUpTypes) => {
     return post({ url: 'authenticate/SignUp', body: signupParam })
 };
 
-export const getUserDetails = ({email}: any) => {
+export const getUserDetails = ({email}: {email: string}) => {
     return get({ url: `user/getUsr/${email}`})
 };
 

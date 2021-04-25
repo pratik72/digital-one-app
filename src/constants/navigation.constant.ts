@@ -16,4 +16,5 @@ export const NAVIGATION = {
     HOME: 'Home',
     LOGIN: 'LOGIN',
     AUTH: 'AUTH',
+    USER: 'USER',
 }
