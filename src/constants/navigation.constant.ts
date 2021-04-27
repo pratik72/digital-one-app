@@ -12,6 +12,8 @@ export const NAVIGATION = {
     ADD_SITE: 'ADD_SITE',
     VIEW_SITE: 'VIEW_SITE',
     SITE: 'SITE',
+
+    EDIT_USER: "EDIT_USER",
  
     HOME: 'Home',
     LOGIN: 'LOGIN',

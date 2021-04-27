@@ -24,6 +24,7 @@ import { ViewMaterialScreen } from '../screens/materials/view-material/view-mate
 import { navigationRef } from './root.navigation';
 import { Colors } from 'react-native-paper';
 import { ViewUserProfileScreen } from '../screens/user-profile/view-user-profile/view-user-profile.screen';
+import { EditUserProfileScreen } from '../screens/user-profile/edit-user-profile/edit-user-profile.screen';
 
 const Drawer = createDrawerNavigator();
 const SiteStack = createStackNavigator();
@@ -42,10 +43,10 @@ const userProfileNavigator = () => {
       screenOptions={{
         header: (props) => <HeaderComponent {...props} />,
       }}>
-        <UserProfileStack.Screen name={NAVIGATION.SITE} component={ViewUserProfileScreen} options={{
+        <UserProfileStack.Screen name={NAVIGATION.USER} component={ViewUserProfileScreen} options={{
               title: "User Profile",
             }}/>
-        <UserProfileStack.Screen name={NAVIGATION.VIEW_SITE} component={ViewSiteScreen} options={{
+        <UserProfileStack.Screen name={NAVIGATION.EDIT_USER} component={EditUserProfileScreen} options={{
               title: "Edit User Profile",
             }}/>
     </UserProfileStack.Navigator>
@@ -123,7 +124,7 @@ const DrawerUserInfo = (props: any) => {
     <View style={{marginHorizontal: 10, marginVertical: 20, paddingLeft: 5}}>
         <Text style={{fontSize: 16, fontWeight: 'bold'}}>{`${user.firstName} ${user.lastName}`}</Text>
         <Text style={{fontSize: 12}}>{user.organization.orgName}</Text>
-        <TouchableOpacity onPress={()=> {console.log("Hello"); props.navigation.navigate(NAVIGATION.USER);}}>
+        <TouchableOpacity onPress={()=> {props.navigation.navigate(NAVIGATION.USER);}}>
           <Text style={{fontSize: 12, color: Colors.cyanA700}}>View Profile</Text>
         </TouchableOpacity>
       </View>
@@ -131,11 +132,15 @@ const DrawerUserInfo = (props: any) => {
 }
 
 const LogoutDrawerContent = (props: any) => {
+
+  const { state, ...rest } = props;
+  const newState = { ...state}  //copy from state before applying any filter. do not change original state
+  newState.routes = newState.routes.filter((item: any) => item.name !== NAVIGATION.USER) 
   
   return (
     <DrawerContentScrollView {...props}>
       <DrawerUserInfo {...props} />
-      <DrawerItemList {...props} />
+      <DrawerItemList {...props} state={newState} />
       <DrawerItem label="Logout" onPress={async () => {
         const logoutRespond = await logout();
         if(logoutRespond.data){
@@ -160,6 +165,7 @@ const DrawerNavigator = () => {
       <Drawer.Screen name={NAVIGATION.HOME} component={siteNavigator} />
       <Drawer.Screen name={NAVIGATION.WORK_REPORT} component={workReportNavigator} />
       <Drawer.Screen name={NAVIGATION.MATERIALS} component={materialsNavigator} />
+      <Drawer.Screen name={NAVIGATION.USER} component={userProfileNavigator} />     
     </Drawer.Navigator>
   )
 }
@@ -182,8 +188,7 @@ const AppContainer = () => {
     <NavigationContainer ref={navigationRef}>
       <MainStack.Navigator initialRouteName={initialRoute} screenOptions={{...hideHeaderOpt}}>
         <MainStack.Screen name={NAVIGATION.HOME} component={DrawerNavigator} />
-        <MainStack.Screen name={NAVIGATION.AUTH} component={AuthNavigator} />
-        <MainStack.Screen name={NAVIGATION.USER} component={userProfileNavigator} />        
+        <MainStack.Screen name={NAVIGATION.AUTH} component={AuthNavigator} />   
       </MainStack.Navigator>
     </NavigationContainer>
   );

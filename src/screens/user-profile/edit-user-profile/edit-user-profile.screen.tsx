@@ -1,377 +1,169 @@
-import { FieldArray, Formik, FormikValues } from 'formik';
-import moment from 'moment';
-import React, { Component, Fragment } from 'react';
-import {
-  ScrollView,
-  Text,
-  View
-} from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import { Button, HelperText, TextInput } from 'react-native-paper';
-import { connect } from 'react-redux';
-import * as Yup from 'yup';
-import { DateTimePickerComponent, Loader, MultiSelect } from '../../../components';
-import { addNewSite, addNewWorkReport, editSite, editWorkReport, getAllSites, getSiteSettings } from '../../../services';
-import { IDropdownObject, IWorkDetailTypes, IWorkReportTypes, SiteType, UserTypes } from '../../../typings';
+import React, { useState } from "react";
 
 import styles from './edit-user-profile.style';
+import { Text, View, ScrollView } from "react-native";
+import * as Yup from 'yup';
+import { useDispatch, useSelector } from "react-redux";
+import { RootState, UserTypes } from "../../../typings";
+import { LabelValueRow, Loader } from "../../../components";
+import { Button, HelperText, TextInput } from "react-native-paper";
+import { NAVIGATION } from "../../../constants";
+import { Formik, FormikValues, useFormik } from "formik";
+import { editUsrInfo } from "../../../services";
+import { setUser } from "../../../reducers/actions";
 
-export interface IProps {
-  user: UserTypes;
-  navigation: any;
-  route: any;
-}
 
-const WorkReportSchema = Yup.object().shape({
-  siteObject: Yup.object().shape({
-    value: Yup.string().required()
-  })
-});
+export const EditUserProfileScreen = (props: any) => {
 
-const mapStateToProps = (state: any) => {
-  return {
-    user: state.user
-  };
-};
+  const content = useSelector((state: RootState) => state.user);
+  const dispatch = useDispatch()
+  const [isXhrSubmit, setIsXhrSubmit] = useState(false);
 
-class AddWorkReport extends Component<IProps, any> {
-
-  private xhr: any = {};
-
-  constructor(props: IProps) {
-    super(props);
-
-    const WorkDetailTypes: IWorkDetailTypes = {
-      totalworker: {
-        labour: 0,
-        mason: 0
-      },
-      workDescription: "",
-      workType: "",
-      workCategoryId: "",
-      workTypeObject: {
-        label: "",
-        value: "",
-        id: ""
+  const onSubmit = async (values: FormikValues) => {
+    setIsXhrSubmit(true);
+    const updatedUserData: UserTypes = {
+      user_id: content.user_id,
+      firstName: values.firstName,
+      lastName: values.lastName,
+      contactNo: values.contactNo,
+      email: values.email,
+      userType: content.userType,
+      organization: {
+        orgId: content.organization.orgId,
+        orgName: content.organization.orgName
       }
     }
-    const workReportFormsObj: IWorkReportTypes = this.getWorkReportFormObject(WorkDetailTypes);
 
-    this.state = {
-      initialValues: workReportFormsObj,
-      allSitesAsOption: [],
-      siteRespond: [],
-      allWorkTypeOption: [],
-      WorkDetailTypes,
-      xhrLoader: false
-    };
-
-  }
-
-  getWorkReportFormObject = (WorkDetailTypes: IWorkDetailTypes) => {
-    const { currentSite } = this.props.route.params;
-
-    if (this.props.route.params.currentWorkReport && this.props.route.params.currentWorkReport._id) {
-      const allExistingWorks = [...this.props.route.params.currentWorkReport.Works];
-      for (let index = 0; index < allExistingWorks.length; index++) {
-        const element = allExistingWorks[index];
-        element.totalworker.labour = element.totalworker.labour.toString();
-        element.totalworker.mason = element.totalworker.mason.toString();
-        element.workTypeObject = {
-          label: element.workType,
-          value: element.workId,
-          id: element.workId
-        }
-
-      }
-      return {
-        Works: allExistingWorks,
-        cementAmount: this.props.route.params.currentWorkReport.cementAmount.toString(),
-        date: moment(this.props.route.params.currentWorkReport.date).toDate(),
-        siteObject: {
-          value: this.props.route.params.currentWorkReport.siteId,
-          label: this.props.route.params.currentWorkReport.siteName,
-          id: this.props.route.params.currentWorkReport.siteId
-        },
-        siteId: this.props.route.params.currentWorkReport.siteId,
-        supervisorId: this.props.route.params.currentWorkReport.supervisorId,
-        supervisorName: this.props.route.params.currentWorkReport.supervisorName,
-        siteName: this.props.route.params.currentWorkReport.siteName
-      }
-    } else {
-      return {
-        Works: [WorkDetailTypes],
-        cementAmount: 0,
-        date: moment().toDate(),
-        siteId: "",
-        siteObject: currentSite,
-        supervisorId: currentSite.value,
-        supervisorName: "",
-        siteName: currentSite.label
-      }
+    const updatedUserInfo = await editUsrInfo(updatedUserData);
+    console.log(updatedUserInfo)
+    if(updatedUserInfo){
+      dispatch(setUser({...content, ...updatedUserData}));
+      goBack();
     }
   }
 
-  allSites = async () => {
-    this.xhr.allSiteRespond = await getAllSites({ page: 1 });
-    if (this.xhr.allSiteRespond.data && this.xhr.allSiteRespond.data[0].data) {
-      const sitesOptions: Array<{}> = [];
-      for (let index = 0; index < this.xhr.allSiteRespond.data[0].data.length; index++) {
-        const element = this.xhr.allSiteRespond.data[0].data[index];
-        sitesOptions.push({
-          value: element.siteId,
-          label: element.siteName,
-          id: element.siteId,
-        });
-      }
+  // const formik = useFormik({
+  //   initialValues: {
+  //     firstName: content.firstName,
+  //     lastName: content.lastName,
+  //     email: content.email,
+  //     contactNo: content.contactNo
+  //   },
+  //   onSubmit,
+  // });
 
-      this.setState({
-        allSitesAsOption: sitesOptions,
-        siteRespond: this.xhr.allSiteRespond.data
-      });
+  const userValidateSchema = Yup.object().shape({
+    firstName: Yup.string().required(),
+    lastName: Yup.string().required(),
+    email: Yup.string().email().required(),
+    contactNo: Yup.number().required()
+  });
 
-      if (this.props.route.params.currentWorkReport && this.props.route.params.currentWorkReport._id) {
-        this.fetchSiteSetting({ value: this.props.route.params.currentWorkReport.siteId });
-      }
-    }
+  const _allFieldArray: any = {};
+  const setFieldRef = (ref: any, keyName: string) => {
+    _allFieldArray[keyName] = ref
   }
 
-  componentDidMount = () => {
-    const { currentSite } = this.props.route.params;
-    this.fetchSiteSetting(currentSite);
-    if (this.props.route.params.currentWorkReport && this.props.route.params.currentWorkReport._id) {
-      this.props.navigation.setOptions({
-        title: "Edit Work Report"
-      })
-    }
+  const setFocusOnNextField = (refKey: string) => {
+    _allFieldArray[refKey] && _allFieldArray[refKey].focus()
   }
 
-  componentWillUnmount = () => {
-    if (this.xhr.respond && this.xhr.respond.abort) {
-      this.xhr.respond.abort();
-    }
-
-    if (this.xhr.workReportCreated && this.xhr.workReportCreated.abort) {
-      this.xhr.workReportCreated.abort();
-    }
-
-    if (this.xhr.allSiteRespond && this.xhr.allSiteRespond.abort) {
-      this.xhr.allSiteRespond.abort();
-    }
-
+  const goBack = () => {
+    props.navigation.goBack()
   }
 
-  setFocusOnNextField = (refKey: string) => {
-    this._allFieldArray[refKey] && this._allFieldArray[refKey].focus()
-  }
+  return (
+    <View style={styles.container}>
 
-  _allFieldArray: any = {};
-  setFieldRef = (ref: any, keyName: string) => {
-    this._allFieldArray[keyName] = ref
-  }
+      <Formik
+        initialValues={{
+          firstName: content.firstName,
+          lastName: content.lastName,
+          email: content.email,
+          contactNo: content.contactNo.toString()
+        }}
+        onSubmit={onSubmit}
+        validationSchema={userValidateSchema}
+      >
+        {formikProps => {
+          return (
+            <View>
+              <ScrollView
+                style={{ padding: 0 }}
+                contentContainerStyle={{ flexGrow: 1 }}
+                keyboardShouldPersistTaps="handled"
+              >
 
-  goBack = () => {
-    this.props.navigation.goBack()
-  }
-
-  handleChangeData = (selectedItems: any, stateKey: string) => {
-    this.setState({ [stateKey]: selectedItems });
-  };
-
-  fetchSiteSetting = async (siteObj: any) => {
-    this.xhr.respond = await getSiteSettings({ siteId: siteObj.value, userId: this.props.user.user_id });
-    if (this.xhr.respond.data && this.xhr.respond.data.workCategories) {
-      const newArray = [];
-      for (let index = 0; index < this.xhr.respond.data.workCategories.length; index++) {
-        const element = this.xhr.respond.data.workCategories[index];
-        newArray.push({
-          value: element.workCategoryId,
-          label: element.workType,
-          id: element.workCategoryId
-        });
-      }
-
-      this.setState({
-        allWorkTypeOption: newArray
-      });
-    }
-  }
-
-  submitEvent = (values: FormikValues) => {
-    this.setState({
-      xhrLoader: true
-    }, async () => {
-
-      const {
-        Works,
-        cementAmount,
-        date,
-        siteObject
-      } = values;
-
-      const isEdit = this.props.route.params.currentWorkReport && this.props.route.params.currentWorkReport._id;
-      const newWorkReportData: IWorkReportTypes = {
-        Works,
-        cementAmount,
-        date,
-        siteId: siteObject.value,
-        supervisorId: this.props.user.user_id,
-        supervisorName: `${this.props.user.firstName} ${this.props.user.lastName}`,
-        siteName: siteObject.label
-      };
-
-      this.xhr.workReportCreated = await (isEdit ? editWorkReport({ ...newWorkReportData, _id: this.props.route.params.currentWorkReport._id, workId: this.props.route.params.currentWorkReport.workId }) : addNewWorkReport(newWorkReportData));
-
-      if (this.xhr.workReportCreated && this.xhr.workReportCreated.data) {
-        this.props.navigation.goBack()
-        this.props.route.params.refreshData();
-        if (isEdit && this.props.route.params.setWorkReportDetails) {
-          this.props.route.params.setWorkReportDetails({ ...newWorkReportData, _id: this.props.route.params.currentWorkReport._id, workId: this.props.route.params.currentWorkReport.workId });
-        }
-      }
-
-      this.setState({
-        xhrLoader: false
-      });
-    });
-  }
-
-  render() {
-    return (
-      <View style={styles.container}>
-        <View style={styles.btnContainer}>
-          <Formik
-            initialValues={this.state.initialValues}
-            onSubmit={this.submitEvent}
-            validationSchema={WorkReportSchema}
-          >
-            {props => {
-              return (
                 <View>
-                  <ScrollView style={{ padding: 0 }} contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps='handled'>
-
-                    <View>
-                      <View>
-                        <TextInput
-                          label="Site"
-                          value={props.values.siteName}
-                          onChangeText={props.handleChange('siteName')}
-                          returnKeyType='next'
-                          disabled={true}
-                          error={!!props.touched.siteName && !!props.errors.siteName}
-                        />
-                        <HelperText type="error" visible={!!props.errors.siteObject?.value}>{props.errors.siteObject?.value}
-                        </HelperText>
-                      </View>
-
-                      <View>
-                        <DateTimePickerComponent label="Date" values={props.values.date} onChange={(date: Date) => props.setFieldValue('date', date)} />
-                      </View>
-                      <View style={styles.fieldView}>
-                        <TextInput
-                          label="Cement"
-                          keyboardType="number-pad"
-                          ref={(ref) => this.setFieldRef(ref, 'cementAmount')}
-                          value={props.values.cementAmount}
-                          onChangeText={props.handleChange('cementAmount')}
-                          onSubmitEditing={this.setFocusOnNextField.bind(this, 'ownerContactNo')}
-                          returnKeyType='next'
-                          error={!!props.touched.cementAmount && !!props.errors.cementAmount}
-                        />
-                      </View>
-
-                      <FieldArray
-                        name="Works"
-                        render={arrayHelpers => (
-                          <Fragment>
-                            {!!props.values.Works.length && props.values.Works.map((workDetails: any, idx: any) => (
-                              <View style={[styles.fieldView, { borderWidth: 1, borderColor: '#dee2e6', backgroundColor: '#007bff', paddingHorizontal: 5, paddingVertical: 7 }]} key={idx}>
-                                <View style={[{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 5 }]}>
-                                  <Text style={[styles.labelText, { width: 200, color: '#fff' }]}>Work Details</Text>
-                                  <TouchableOpacity style={{ marginRight: 7 }} onPress={() => {
-                                    arrayHelpers.remove(idx);
-                                  }}>
-                                    <Text style={[styles.labelText, { color: '#fff' }]}>X</Text>
-                                  </TouchableOpacity>
-                                </View>
-                                <View style={styles.fieldView}>
-                                  <MultiSelect value={workDetails.workTypeObject} name={`Works[${idx}].workTypeObject`} items={this.state.allWorkTypeOption} onChange={(val: any) => { props.setFieldValue(`Works[${idx}].workTypeObject`, val); props.setFieldValue(`Works[${idx}].workCategoryId`, val.value); props.setFieldValue(`Works[${idx}].workType`, val.label); }} label="Work Type" disabled={!props.values.siteObject?.value} />
-                                </View>
-                                <View style={styles.fieldView}>
-                                  <TextInput
-                                    label="Mason"
-                                    keyboardType="number-pad"
-                                    ref={(ref) => this.setFieldRef(ref, 'Mason')}
-                                    value={workDetails.totalworker.mason}
-                                    onChangeText={props.handleChange(`Works[${idx}].totalworker.mason`)}
-                                    onSubmitEditing={this.setFocusOnNextField.bind(this, 'Labour')}
-                                    returnKeyType='next'
-                                  />
-                                </View>
-
-                                <View style={styles.fieldView}>
-                                  <TextInput
-                                    label="Labour"
-                                    keyboardType="number-pad"
-                                    ref={(ref) => this.setFieldRef(ref, 'Labour')}
-                                    value={workDetails.totalworker.labour}
-                                    onChangeText={props.handleChange(`Works[${idx}].totalworker.labour`)}
-                                    onSubmitEditing={this.setFocusOnNextField.bind(this, 'Description')}
-                                    returnKeyType='next'
-                                  />
-                                </View>
-
-                                <View style={styles.fieldView}>
-                                  <TextInput
-                                    label="Description"
-                                    multiline={true}
-                                    ref={(ref) => this.setFieldRef(ref, 'Description')}
-                                    value={workDetails.workDescription}
-                                    onChangeText={props.handleChange(`Works[${idx}].workDescription`)}
-                                    onSubmitEditing={props.handleSubmit}
-                                    returnKeyType='done'
-                                  />
-                                </View>
-
-                              </View>
-                            ))}
-
-                            <View style={styles.fieldView}>
-                              <Button mode="contained" onPress={() => { arrayHelpers.push(this.state.WorkDetailTypes) }} uppercase={false} style={styles.btn}>
-                                <Text style={{ fontSize: 16 }}>{'Add Another Work Details'}</Text>
-                              </Button>
-                            </View>
-                          </Fragment>
-                        )}></FieldArray>
+                  <View style={styles.fieldView}>
+                    <TextInput
+                      label="First Name"
+                      value={formikProps.values.firstName}
+                      onChangeText={formikProps.handleChange('firstName')}
+                      returnKeyType='next'
+                      onSubmitEditing={setFocusOnNextField.bind(this, 'lastName')}
+                      error={!!formikProps.touched.firstName && !!formikProps.errors.firstName}
+                    />
+                  </View>
 
 
+                  <View style={styles.fieldView}>
+                    <TextInput
+                      label="Last Name"
+                      ref={(ref) => setFieldRef(ref, 'lastName')}
+                      value={formikProps.values.lastName}
+                      onChangeText={formikProps.handleChange('lastName')}
+                      onSubmitEditing={setFocusOnNextField.bind(this, 'email')}
+                      error={!!formikProps.touched.lastName && !!formikProps.errors.lastName}
+                      returnKeyType='next'
+                    />
+                  </View>
 
+                  <View style={styles.fieldView}>
+                    <TextInput
+                      label="Email"
+                      ref={(ref) => setFieldRef(ref, 'email')}
+                      value={formikProps.values.email}
+                      onChangeText={formikProps.handleChange('email')}
+                      onSubmitEditing={setFocusOnNextField.bind(this, 'contactNo')}
+                      returnKeyType='next'
+                      error={!!formikProps.touched.email && !!formikProps.errors.email}
+                    />
+                  </View>
 
-                      {!this.state.xhrLoader && <View style={styles.btnView}>
-                        <Button mode="contained" onPress={props.handleSubmit} uppercase={false} style={styles.btn}>
-                          <Text style={{ fontSize: 16 }}>{'Save'}</Text>
-                        </Button>
-                        <Button mode="contained" onPress={this.goBack} uppercase={false} style={styles.btn}>
-                          <Text style={{ fontSize: 16 }}>{'Cancel'}</Text>
-                        </Button>
-                      </View>}
+                  <View style={styles.fieldView}>
+                    <TextInput
+                      label="Contract No."
+                      ref={(ref) => setFieldRef(ref, 'contactNo')}
+                      value={formikProps.values.contactNo}
+                      keyboardType="number-pad"
+                      onChangeText={formikProps.handleChange('contactNo')}
+                      onSubmitEditing={formikProps.handleSubmit}
+                      returnKeyType='done'
+                      error={!!formikProps.touched.contactNo && !!formikProps.errors.contactNo}
+                    />
+                  </View>
 
-                      {this.state.xhrLoader && <Loader />}
+                  {!isXhrSubmit && <View style={styles.btnView}>
+                    <Button mode="contained" onPress={formikProps.handleSubmit} uppercase={false} style={styles.btn}>
+                      <Text style={{ fontSize: 16 }}>{'Save'}</Text>
+                    </Button>
+                    <Button mode="contained" onPress={goBack} uppercase={false} style={styles.btn}>
+                      <Text style={{ fontSize: 16 }}>{'Cancel'}</Text>
+                    </Button>
+                  </View>}
 
-                    </View>
-
-
-                  </ScrollView>
+                  {isXhrSubmit && <Loader />}
 
                 </View>
-              );
-            }}
-          </Formik>
-        </View>
 
-      </View>
-    );
-  }
-}
 
-export default connect(mapStateToProps, {})(AddWorkReport);
+              </ScrollView>
+
+            </View>
+          );
+        }}
+      </Formik>
+    </View>
+  );
+};

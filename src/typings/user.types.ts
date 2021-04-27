@@ -20,8 +20,9 @@ export interface SignUpTypes {
 
 export interface UserTypes extends Omit<SignUpTypes, 'password'>{
   user_id: string;
-  _id: string;
-  __v: number;
+  userType: number;
+  _id?: string;
+  __v?: number;
 }
 
 

@@ -6,16 +6,15 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../../typings";
 import { LabelValueRow } from "../../../components";
 import { Button } from "react-native-paper";
+import { NAVIGATION } from "../../../constants";
 
 
 export const ViewUserProfileScreen = (props: any) => {
   
   const content = useSelector((state:RootState) => state.user);
 
-  console.log("content", content)
-
   const openEditUserProfie = () => {
-
+    props.navigation.navigate(NAVIGATION.EDIT_USER);
   }
 
   return (
