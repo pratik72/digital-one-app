@@ -25,6 +25,11 @@ export interface UserTypes extends Omit<SignUpTypes, 'password'>{
   __v?: number;
 }
 
+export interface IChangePasswordParma{
+  email: string;
+  password: string;
+}
+
 
 export interface RootState{
   user: UserTypes

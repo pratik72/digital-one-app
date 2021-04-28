@@ -42,21 +42,11 @@ export const EditUserProfileScreen = (props: any) => {
     }
   }
 
-  // const formik = useFormik({
-  //   initialValues: {
-  //     firstName: content.firstName,
-  //     lastName: content.lastName,
-  //     email: content.email,
-  //     contactNo: content.contactNo
-  //   },
-  //   onSubmit,
-  // });
-
   const userValidateSchema = Yup.object().shape({
-    firstName: Yup.string().required(),
-    lastName: Yup.string().required(),
-    email: Yup.string().email().required(),
-    contactNo: Yup.number().required()
+    firstName: Yup.string().required('First Name is required'),
+    lastName: Yup.string().required('Last Name is required'),
+    email: Yup.string().email('Invalid Email').required('Email is required'),
+    contactNo: Yup.number().required('Contact No. is required')
   });
 
   const _allFieldArray: any = {};
@@ -80,7 +70,7 @@ export const EditUserProfileScreen = (props: any) => {
           firstName: content.firstName,
           lastName: content.lastName,
           email: content.email,
-          contactNo: content.contactNo.toString()
+          contactNo: content.contactNo ? content.contactNo.toString() : ""
         }}
         onSubmit={onSubmit}
         validationSchema={userValidateSchema}
@@ -104,6 +94,8 @@ export const EditUserProfileScreen = (props: any) => {
                       onSubmitEditing={setFocusOnNextField.bind(this, 'lastName')}
                       error={!!formikProps.touched.firstName && !!formikProps.errors.firstName}
                     />
+                    <HelperText type="error" visible={!!formikProps.errors.firstName}>{formikProps.errors.firstName}
+                        </HelperText>
                   </View>
 
 
@@ -117,6 +109,8 @@ export const EditUserProfileScreen = (props: any) => {
                       error={!!formikProps.touched.lastName && !!formikProps.errors.lastName}
                       returnKeyType='next'
                     />
+                    <HelperText type="error" visible={!!formikProps.errors.lastName}>{formikProps.errors.lastName}
+                        </HelperText>
                   </View>
 
                   <View style={styles.fieldView}>
@@ -129,6 +123,8 @@ export const EditUserProfileScreen = (props: any) => {
                       returnKeyType='next'
                       error={!!formikProps.touched.email && !!formikProps.errors.email}
                     />
+                    <HelperText type="error" visible={!!formikProps.errors.email}>{formikProps.errors.email}
+                        </HelperText>
                   </View>
 
                   <View style={styles.fieldView}>
@@ -142,6 +138,8 @@ export const EditUserProfileScreen = (props: any) => {
                       returnKeyType='done'
                       error={!!formikProps.touched.contactNo && !!formikProps.errors.contactNo}
                     />
+                    <HelperText type="error" visible={!!formikProps.errors.contactNo}>{formikProps.errors.contactNo}
+                        </HelperText>
                   </View>
 
                   {!isXhrSubmit && <View style={styles.btnView}>

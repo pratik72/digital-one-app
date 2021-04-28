@@ -14,6 +14,7 @@ export const NAVIGATION = {
     SITE: 'SITE',
 
     EDIT_USER: "EDIT_USER",
+    CHANGE_PASSWORD: "CHANGE_PASSWORD",
  
     HOME: 'Home',
     LOGIN: 'LOGIN',

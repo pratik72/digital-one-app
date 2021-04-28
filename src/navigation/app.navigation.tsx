@@ -25,6 +25,7 @@ import { navigationRef } from './root.navigation';
 import { Colors } from 'react-native-paper';
 import { ViewUserProfileScreen } from '../screens/user-profile/view-user-profile/view-user-profile.screen';
 import { EditUserProfileScreen } from '../screens/user-profile/edit-user-profile/edit-user-profile.screen';
+import { ChangePasswordScreen } from '../screens/user-profile/change-password/change-password.screen';
 
 const Drawer = createDrawerNavigator();
 const SiteStack = createStackNavigator();
@@ -48,6 +49,9 @@ const userProfileNavigator = () => {
             }}/>
         <UserProfileStack.Screen name={NAVIGATION.EDIT_USER} component={EditUserProfileScreen} options={{
               title: "Edit User Profile",
+            }}/>
+        <UserProfileStack.Screen name={NAVIGATION.CHANGE_PASSWORD} component={ChangePasswordScreen} options={{
+              title: "Change Password",
             }}/>
     </UserProfileStack.Navigator>
   );

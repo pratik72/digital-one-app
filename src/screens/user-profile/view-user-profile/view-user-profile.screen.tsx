@@ -17,13 +17,17 @@ export const ViewUserProfileScreen = (props: any) => {
     props.navigation.navigate(NAVIGATION.EDIT_USER);
   }
 
+  const openChangePassword = () => {
+    props.navigation.navigate(NAVIGATION.CHANGE_PASSWORD);
+  }
+
   return (
     <View style={styles.container}>
         <View style={styles.btnContainer}>
           <Button mode="outlined" uppercase={false} onPress={openEditUserProfie} style={styles.btnStyle}>
             <Text style={{fontSize: 16}}>{'Edit Details'}</Text>
           </Button>
-          <Button mode="outlined" uppercase={false} onPress={openEditUserProfie} style={styles.btnStyle}>
+          <Button mode="outlined" uppercase={false} onPress={openChangePassword} style={styles.btnStyle}>
             <Text style={{fontSize: 16}}>{'Change Password'}</Text>
           </Button>
         </View>
@@ -34,8 +38,8 @@ export const ViewUserProfileScreen = (props: any) => {
               <LabelValueRow label="First Name" value={content.firstName}/>
               <LabelValueRow label="Last Name" value={content.lastName}/>
               <LabelValueRow label="Email" value={content.email}/>
-              <LabelValueRow label="Contact No." value={content.contactNo.toString()}/>
-              <LabelValueRow label="Organization." value={content.organization.orgName}/>
+              <LabelValueRow label="Contact No." value={content.contactNo ? content.contactNo.toString() : ''}/>
+              <LabelValueRow label="Organization." value={content.organization ? content.organization.orgName : ''}/>
             </View>
 
           </ScrollView>

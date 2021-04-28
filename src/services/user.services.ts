@@ -1,5 +1,5 @@
 import { get, post } from "../utils/axios.util";
-import {LoginTypes, SignUpTypes, UserTypes} from "../typings"
+import {IChangePasswordParma, LoginTypes, SignUpTypes, UserTypes} from "../typings"
 
 export const login = (loginParam: LoginTypes) => {
     return post({ url: 'authenticate/SignIn', body: loginParam })
@@ -21,7 +21,9 @@ export const editUsrInfo = (editUserParam: UserTypes) => {
     return post({ url: `user/editDetails/${editUserParam.email}`, body: editUserParam})
 };
 
-
+export const changeUserPassword = (updatedPasswordData: IChangePasswordParma) => {
+    return post({ url: `user/usrPass`, body: updatedPasswordData})
+};
 
 export const getAllUsersDetails = () => {
     return get({ url: `user/getAllUsr`})
