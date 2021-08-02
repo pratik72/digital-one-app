@@ -6,11 +6,10 @@ export interface SiteAddressType {
 }
 
 export interface SupervisorType {
-  siteSupervisorId : string;
-  siteSupervisorName : string;
-  siteSupervisorNo : number;
+  siteSupervisorId: string;
+  siteSupervisorName: string;
+  siteSupervisorNo: number;
 }
-
 
 export interface SiteType {
   siteName: string;
@@ -23,25 +22,24 @@ export interface SiteType {
   tentativeDeadline: Date;
 }
 
-
 export interface ISiteRules {
-  siteId : string;
-  supervisors : Array<{
-    supervisorId : string;
-    supervisorName : string;
+  siteId: string;
+  supervisors: Array<{
+    supervisorId: string;
+    supervisorName: string;
   }>;
-  userExpense : Array<{
-    expenseUserId : string;
-    expenseUserName : string;
+  userExpense: Array<{
+    expenseUserId: string;
+    expenseUserName: string;
   }>;
-  adminUsers : Array<{
-    adminUserId : string;
-    adminUserName : string;
+  adminUsers: Array<{
+    adminUserId: string;
+    adminUserName: string;
   }>;
   workCategories: Array<{
-    workId : string;
-    WorkTypes : string;
-  }>
+    workId: string;
+    WorkTypes: string;
+  }>;
 }
 
 export interface IDropdownObject {
@@ -49,4 +47,13 @@ export interface IDropdownObject {
   label: string;
   id: string;
   isFixed?: boolean;
+}
+
+export interface SiteFilterAPIProps {
+  page?: number;
+  siteName?: string;
+  siteInaugurationDateFrom?: Date;
+  siteInaugurationDateTo?: Date;
+  tentativeDeadlineFrom?: Date;
+  tentativeDeadlineTo?: Date;
 }

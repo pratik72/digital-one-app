@@ -71,7 +71,7 @@ export const PaginationComponent = (props: IPaginationProps) => {
   }
 
   return (
-    <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginHorizontal: 20 }}>
+    (!!listData.length && <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginHorizontal: 20 }}>
       <TouchableOpacity style={styles.btnView} onPress={() => setCurrentPage(1)}>
         <Text style={styles.btnText}>First</Text>
       </TouchableOpacity>
@@ -93,6 +93,6 @@ export const PaginationComponent = (props: IPaginationProps) => {
       <TouchableOpacity style={styles.btnView} onPress={() => setCurrentPage(listData.length)}>
         <Text style={styles.btnText}>Last({listData.length})</Text>
       </TouchableOpacity>
-    </View>
+    </View>)
   );
 };

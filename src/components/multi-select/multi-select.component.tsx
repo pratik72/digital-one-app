@@ -6,10 +6,7 @@ import {
   View,
   TouchableOpacity,
   TextInput,
-  FlatList,
-  ScrollView,
-  KeyboardAvoidingView,
-  Platform
+  FlatList
 } from 'react-native';
 import { Button, Chip, Colors } from 'react-native-paper';
 
@@ -50,7 +47,7 @@ export class MultiSelect extends Component<IMultiSelectProps, IMultiSelectStates
       if (onLoadFlag && this.props.isDefaultData) {
         this.setState({
           value: items[0]
-        }, () => { this.props.onChange(this.state.value) });
+        }, () => { this.props.onChange(this.props.multiple ? [this.state.value]: this.state.value) });
       }
     }
   }
@@ -195,7 +192,7 @@ export class MultiSelect extends Component<IMultiSelectProps, IMultiSelectStates
     return (
       <View style={styles.container}>
         <View style={styles.chipContainer}>
-          {this.props.multiple && this.state.values.map((obj: any, index) => (
+          {this.props.multiple && !!this.state.values.length && this.state.values.map((obj: any, index) => (
             <Chip key={obj.id} onPress={() => console.log('Pressed')} style={styles.chipStyle} onClose={() => this.removeChip(obj, index)} disabled={obj.disabled}>
               {obj.label}
             </Chip>

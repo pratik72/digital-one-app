@@ -1,8 +1,7 @@
 import React, {useState} from 'react';
-import {View, Platform, Keyboard, Text} from 'react-native';
+import {View, Platform, Keyboard, Text, TouchableOpacity} from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import { COMMON } from '../../constants';
 
 export const DateTimePickerComponent = (props: any) => {
@@ -23,6 +22,7 @@ export const DateTimePickerComponent = (props: any) => {
   };
 
   const showDatepicker = () => {
+    console.log("Hello")
     Keyboard.dismiss();
     showMode('date');
   };
